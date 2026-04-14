@@ -1,0 +1,3348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ecosistema Tecnológico — Unidad de Inteligencia</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --sidebar-w: 260px;
+  --header-h: 0px;
+  --bg:        #0b0f1a;
+  --bg2:       #111827;
+  --bg3:       #1a2035;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #e2e8f0;
+  --text-sub:  #94a3b8;
+  --text-dim:  #4b5563;
+  --accent:    #3b82f6;
+  --accent2:   #60a5fa;
+  --green:     #22c55e;
+  --green2:    #4ade80;
+  --amber:     #f59e0b;
+  --amber2:    #fbbf24;
+  --rose:      #f43f5e;
+  --purple:    #a855f7;
+  --teal:      #14b8a6;
+  --cyan:      #06b6d4;
+  --orange:    #f97316;
+  --white:     #ffffff;
+  --card:      #131929;
+  --card2:     #1c2540;
+  --glow-blue: rgba(59,130,246,0.15);
+  --glow-green:rgba(34,197,94,0.12);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ═══════════════════════ SIDEBAR */
+#sidebar{
+  width:var(--sidebar-w);
+  min-height:100vh;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  z-index:200;
+  overflow-y:auto;
+  overflow-x:hidden;
+  transform:translateX(calc(-1 * var(--sidebar-w) + 48px));
+  transition:transform .28s cubic-bezier(.4,0,.2,1), box-shadow .28s ease;
+  box-shadow:none;
+}
+/* Hover zone trigger — invisible strip on left edge */
+#sidebar-trigger{
+  position:fixed;top:0;left:0;bottom:0;width:48px;z-index:201;cursor:pointer;
+}
+#sidebar.expanded{
+  transform:translateX(0);
+  box-shadow:6px 0 40px rgba(0,0,0,.6);
+}
+
+/* Mini rail icons (visible when collapsed) */
+.nav-item .icon{
+  font-size:15px;
+  width:20px;
+  text-align:center;
+  flex-shrink:0;
+  transition:transform .2s;
+}
+/* Rail indicator bar on left edge */
+#sidebar::before{
+  content:'';
+  position:absolute;top:0;left:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--accent),#a855f7,var(--teal));
+  opacity:.6;
+}
+
+/* Rail */
+.sidebar-rail{
+  position:fixed;top:0;left:0;bottom:0;width:48px;
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:20px;gap:6px;
+  z-index:199;pointer-events:none;
+  transition:opacity .2s;
+}
+.rail-icon{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;opacity:.5;
+  transition:opacity .2s;
+}
+
+/* Collapsed state: show a small "open" tab on the left edge */
+#sidebar-tab{
+  position:fixed;top:50%;left:0;transform:translateY(-50%);
+  width:18px;height:64px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-left:none;border-radius:0 8px 8px 0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:198;
+  transition:width .2s,background .2s;
+  color:var(--text-dim);font-size:10px;
+}
+#sidebar-tab:hover{width:22px;background:var(--bg3);color:var(--accent2);}
+#sidebar-tab::after{content:'›';font-size:13px;font-weight:700;}
+#sidebar.expanded ~ #sidebar-tab,
+body.sidebar-open #sidebar-tab{display:none;}
+
+.sidebar-brand{
+  padding:28px 22px 20px;
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+.brand-badge{
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:8px;
+  display:block;
+}
+.brand-name{
+  font-size:15px;
+  font-weight:800;
+  color:var(--white);
+  line-height:1.3;
+}
+.brand-sub{
+  font-size:11px;
+  color:var(--text-sub);
+  margin-top:3px;
+}
+
+.sidebar-section-label{
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  padding:20px 22px 8px;
+  white-space:nowrap;
+}
+
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 22px;
+  cursor:pointer;
+  border-radius:0;
+  transition:all .2s;
+  position:relative;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-sub);
+  text-decoration:none;
+  border-left:3px solid transparent;
+  white-space:nowrap;
+}
+.nav-item:hover{
+  background:rgba(255,255,255,0.04);
+  color:var(--text);
+}
+.nav-item.active{
+  background:rgba(59,130,246,0.1);
+  color:var(--accent2);
+  border-left-color:var(--accent);
+}
+.nav-item .badge{
+  margin-left:auto;
+  background:rgba(59,130,246,0.2);
+  color:var(--accent2);
+  font-size:10px;
+  font-weight:700;
+  padding:1px 7px;
+  border-radius:10px;
+}
+
+.sidebar-footer{
+  margin-top:auto;
+  padding:16px 22px;
+  border-top:1px solid var(--border);
+  font-size:11px;
+  color:var(--text-dim);
+  white-space:nowrap;
+}
+.sidebar-footer strong{color:var(--text-sub);}
+
+/* Close button inside sidebar */
+#sidebar-close{
+  position:absolute;top:14px;right:12px;
+  width:28px;height:28px;border-radius:7px;
+  border:1px solid var(--border);background:rgba(255,255,255,.04);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:13px;color:var(--text-dim);
+  transition:background .2s,color .2s;z-index:202;
+  opacity:0;transition:opacity .2s .1s;
+}
+#sidebar.expanded #sidebar-close{opacity:1;}
+#sidebar-close:hover{background:rgba(255,255,255,.1);color:var(--text);}
+
+/* ═══════════════════════ MAIN */
+#main{
+  margin-left:48px;
+  flex:1;
+  min-height:100vh;
+  background:var(--bg);
+  transition:margin-left .28s cubic-bezier(.4,0,.2,1);
+}
+
+/* ═══════════════════════ PAGES */
+.page{
+  display:none;
+  padding:44px 48px;
+  animation:fadeIn .25s ease;
+  min-height:100vh;
+}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ═══════════════════════ PAGE HEADER */
+.page-header{
+  margin-bottom:40px;
+}
+.page-eyebrow{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.page-eyebrow::before{
+  content:'';
+  display:block;
+  width:20px;height:2px;
+  background:var(--accent);
+  border-radius:2px;
+}
+.page-title{
+  font-size:34px;
+  font-weight:800;
+  color:var(--white);
+  line-height:1.15;
+  margin-bottom:10px;
+}
+.page-title span{
+  background:linear-gradient(90deg,#3b82f6,#06b6d4);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.page-desc{
+  font-size:14px;
+  color:var(--text-sub);
+  max-width:640px;
+  line-height:1.7;
+}
+
+/* ═══════════════════════ KPI GRID */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:16px;
+  margin-bottom:36px;
+}
+.kpi-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px 20px;
+  position:relative;
+  overflow:hidden;
+  transition:border-color .2s,transform .2s;
+}
+.kpi-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.kpi-card::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:var(--kpi-color,var(--accent));
+  border-radius:14px 14px 0 0;
+}
+.kpi-val{
+  font-size:32px;
+  font-weight:800;
+  color:var(--white);
+  line-height:1;
+  margin-bottom:6px;
+  font-family:'JetBrains Mono',monospace;
+}
+.kpi-label{
+  font-size:11px;
+  font-weight:600;
+  color:var(--text-sub);
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+/* ═══════════════════════ CARDS */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  margin-bottom:24px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.card:hover{
+  border-color:var(--border2);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+
+.card-header{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  padding:26px 28px 22px;
+  cursor:pointer;
+  user-select:none;
+}
+.card-header:hover .expand-icon{color:var(--accent2);}
+
+.proj-icon{
+  width:48px;height:48px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+
+.card-header-meta{flex:1;}
+.card-header-meta h3{
+  font-size:17px;font-weight:700;color:var(--white);margin-bottom:4px;
+}
+.card-header-meta .tagline{
+  font-size:12.5px;color:var(--text-sub);margin-bottom:10px;line-height:1.5;
+}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{
+  font-size:10.5px;font-weight:600;padding:3px 10px;
+  border-radius:20px;border:1px solid;
+}
+.tag-blue{color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(59,130,246,.1);}
+.tag-green{color:#4ade80;border-color:rgba(74,222,128,.3);background:rgba(34,197,94,.1);}
+.tag-purple{color:#c084fc;border-color:rgba(192,132,252,.3);background:rgba(168,85,247,.1);}
+.tag-orange{color:#fb923c;border-color:rgba(251,146,60,.3);background:rgba(249,115,22,.1);}
+.tag-teal{color:#2dd4bf;border-color:rgba(45,212,191,.3);background:rgba(20,184,166,.1);}
+.tag-rose{color:#fb7185;border-color:rgba(251,113,133,.3);background:rgba(244,63,94,.1);}
+.tag-amber{color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(245,158,11,.1);}
+
+.complexity-pill{
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;
+}
+.cp-extreme{background:rgba(244,63,94,.15);color:#fb7185;border:1px solid rgba(244,63,94,.3);}
+.cp-high{background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3);}
+.cp-medium{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3);}
+.cp-low{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
+
+.expand-icon{
+  color:var(--text-dim);font-size:18px;flex-shrink:0;
+  transition:transform .25s,color .2s;margin-top:2px;
+}
+.card.open .expand-icon{transform:rotate(180deg);color:var(--accent2);}
+
+.card-body{
+  display:none;
+  padding:0 28px 28px;
+  border-top:1px solid var(--border);
+}
+.card.open .card-body{display:block;}
+
+.card-body-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:28px;
+  padding-top:24px;
+}
+.card-col h4{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:12px;
+}
+.card-col ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.card-col ul li{
+  font-size:13px;color:var(--text-sub);padding-left:18px;position:relative;line-height:1.5;
+}
+.card-col ul li::before{
+  content:'▸';position:absolute;left:0;color:var(--accent);font-size:11px;top:1px;
+}
+
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  padding:16px 28px;background:rgba(255,255,255,.02);border-top:1px solid var(--border);
+}
+.card-footer .meta-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.card-footer .meta-tag{
+  font-size:10.5px;color:var(--text-dim);
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  padding:3px 10px;border-radius:6px;
+}
+.inv-badge{
+  font-size:12px;font-weight:700;color:var(--green2);
+  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);
+  padding:5px 14px;border-radius:8px;white-space:nowrap;
+}
+
+/* ═══════════════════════ SECTION TITLE */
+.section-title{
+  font-size:13px;font-weight:700;color:var(--white);
+  margin:32px 0 16px;display:flex;align-items:center;gap:10px;
+}
+.section-title::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ═══════════════════════ TABLE */
+.tbl-wrap{
+  overflow-x:auto;border-radius:12px;
+  border:1px solid var(--border);margin-bottom:24px;
+}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{background:var(--bg3);}
+thead th{
+  padding:13px 16px;text-align:left;font-size:10.5px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--text-sub);
+  border-bottom:1px solid var(--border2);
+}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,.025);}
+tbody td{padding:12px 16px;color:var(--text-sub);vertical-align:middle;}
+td.t-bold{font-weight:700;color:var(--white);}
+td.t-green{font-weight:700;color:var(--green2);font-family:'JetBrains Mono',monospace;}
+td.t-red{font-weight:700;color:#fb7185;font-family:'JetBrains Mono',monospace;}
+td.t-mono{font-family:'JetBrains Mono',monospace;color:var(--accent2);}
+
+/* ═══════════════════════ TECH PILLS */
+.tech-group{margin-bottom:28px;}
+.tech-group-title{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:12px;
+}
+.tech-pills{display:flex;flex-wrap:wrap;gap:10px;}
+.tech-pill{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px 16px;font-size:12.5px;font-weight:500;color:var(--text);
+  display:flex;align-items:center;gap:8px;transition:border-color .2s,background .2s;
+}
+.tech-pill:hover{border-color:var(--border2);background:var(--card2);}
+.tech-pill .cnt{
+  background:rgba(59,130,246,.2);color:var(--accent2);font-size:10px;
+  font-weight:700;padding:1px 7px;border-radius:8px;
+}
+
+/* ═══════════════════════ CALLOUT */
+.callout{
+  border-radius:12px;padding:20px 24px;margin-bottom:20px;
+  border-left:3px solid;display:flex;gap:14px;align-items:flex-start;
+}
+.callout-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.callout-content h4{font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.callout-content p,.callout-content li{font-size:13px;color:var(--text-sub);line-height:1.6;}
+.callout-content ul{padding-left:16px;}
+.callout-content ul li{margin-bottom:4px;}
+.callout.blue{background:rgba(59,130,246,.07);border-color:var(--accent);}
+.callout.green{background:rgba(34,197,94,.07);border-color:var(--green);}
+.callout.amber{background:rgba(245,158,11,.07);border-color:var(--amber);}
+.callout.rose{background:rgba(244,63,94,.07);border-color:var(--rose);}
+
+/* ═══════════════════════ HERO TOTAL BOX */
+.hero-box{
+  background:linear-gradient(135deg,var(--card2) 0%,rgba(59,130,246,.12) 100%);
+  border:1px solid rgba(59,130,246,.25);
+  border-radius:20px;padding:40px 44px;margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.hero-box::before{
+  content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;
+  border-radius:50%;background:rgba(59,130,246,.06);pointer-events:none;
+}
+.hero-box .eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent2);margin-bottom:10px;
+}
+.hero-box .big{font-size:54px;font-weight:900;color:var(--white);line-height:1;margin-bottom:4px;}
+.hero-box .sub{font-size:16px;color:var(--text-sub);margin-bottom:32px;}
+.hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px;}
+.hero-item{border-left:2px solid rgba(59,130,246,.3);padding-left:14px;}
+.hero-item .hval{font-size:18px;font-weight:700;color:var(--white);}
+.hero-item .hlbl{font-size:11px;color:var(--text-dim);margin-top:3px;}
+
+/* ═══════════════════════ PROGRESS BARS */
+.prog-row{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.prog-label{font-size:12px;color:var(--text-sub);width:200px;flex-shrink:0;}
+.prog-bar{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.prog-count{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-dim);width:30px;text-align:right;}
+
+/* ═══════════════════════ OVERVIEW COVER */
+.overview-cover{
+  background:linear-gradient(135deg,#0f1f3d 0%,#0b1628 40%,#0d1d35 100%);
+  border:1px solid rgba(59,130,246,.2);
+  border-radius:20px;padding:52px 52px 44px;margin-bottom:36px;
+  position:relative;overflow:hidden;
+}
+.overview-cover::before{
+  content:'';position:absolute;top:-120px;right:-120px;width:500px;height:500px;
+  border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.08) 0%,transparent 70%);
+}
+.overview-cover::after{
+  content:'';position:absolute;bottom:-80px;left:-60px;width:350px;height:350px;
+  border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,.05) 0%,transparent 70%);
+}
+.ov-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);
+  border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;color:var(--accent2);margin-bottom:22px;
+}
+.ov-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.ov-title{
+  font-size:44px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:12px;
+}
+.ov-title span{
+  background:linear-gradient(90deg,#60a5fa,#34d399);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.ov-subtitle{font-size:15px;color:var(--text-sub);max-width:580px;line-height:1.7;margin-bottom:36px;}
+.ov-stats{display:flex;gap:36px;flex-wrap:wrap;}
+.ov-stat .val{font-size:28px;font-weight:800;color:var(--white);line-height:1;}
+.ov-stat .lbl{font-size:11px;color:var(--text-dim);margin-top:3px;}
+
+/* ═══════════════════════ ROI TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:20px;position:relative;}
+.tl-item:not(:last-child) .tl-line::after{
+  content:'';position:absolute;top:32px;left:15px;bottom:-10px;width:2px;
+  background:var(--border);
+}
+.tl-line{
+  display:flex;flex-direction:column;align-items:center;
+  flex-shrink:0;width:32px;position:relative;
+}
+.tl-dot{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  border:2px solid;z-index:1;background:var(--bg);
+}
+.tl-content{padding-bottom:28px;flex:1;}
+.tl-content h4{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.tl-content p{font-size:13px;color:var(--text-sub);line-height:1.6;}
+
+/* ═══════════════════════ PRODUCT CARDS */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.product-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:24px;transition:border-color .2s,transform .2s;
+}
+.product-card:hover{border-color:rgba(34,197,94,.3);transform:translateY(-3px);}
+.product-card .ptitle{font-size:15px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.product-card .pdesc{font-size:12.5px;color:var(--text-sub);margin-bottom:16px;line-height:1.5;}
+.product-card .pmarket{font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.product-card .pprice{font-size:22px;font-weight:800;color:var(--green2);line-height:1;}
+.product-card .pprice-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+
+/* ═══════════════════════ DIVIDER */
+.divider{height:1px;background:var(--border);margin:28px 0;}
+
+/* ═══════════════════════ ARCHITECTURE */
+.arch-diagram{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:40px 36px;
+  margin-bottom:28px;
+  overflow:hidden;
+}
+.arch-diagram::before{
+  content:'';position:absolute;top:-100px;right:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(59,130,246,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.arch-layers{display:flex;flex-direction:column;gap:12px;}
+
+.arch-layer{
+  border-radius:14px;
+  border:1px solid var(--border2);
+  overflow:hidden;
+  animation:layerIn .45s ease both;
+}
+@keyframes layerIn{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:translateX(0);}}
+
+.arch-layer:nth-child(1){animation-delay:.04s;}
+.arch-layer:nth-child(2){animation-delay:.1s;}
+.arch-layer:nth-child(3){animation-delay:.16s;}
+.arch-layer:nth-child(4){animation-delay:.22s;}
+.arch-layer:nth-child(5){animation-delay:.28s;}
+.arch-layer:nth-child(6){animation-delay:.34s;}
+.arch-layer:nth-child(7){animation-delay:.40s;}
+
+.arch-layer-header{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 18px;
+  font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+}
+.arch-layer-header .layer-icon{font-size:17px;}
+.arch-layer-header .layer-name{flex:1;}
+.arch-layer-header .layer-badge{
+  font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.5px;
+}
+
+.arch-layer-body{
+  padding:14px 18px 16px;
+  display:flex;flex-wrap:wrap;gap:9px;
+  background:rgba(0,0,0,.15);
+}
+
+.arch-node{
+  display:flex;align-items:center;gap:7px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:9px;padding:7px 13px;
+  font-size:12px;font-weight:500;color:var(--text);
+  transition:border-color .2s,transform .15s,box-shadow .2s;
+  cursor:default;
+}
+.arch-node:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4);}
+.arch-node .node-icon{font-size:14px;}
+.arch-node .node-sub{font-size:10px;color:var(--text-dim);margin-left:2px;}
+
+.arch-arrow{
+  display:flex;justify-content:center;align-items:center;
+  height:20px;position:relative;
+}
+.arch-arrow::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:2px;height:100%;background:var(--border2);
+}
+.arch-arrow::after{
+  content:'▼';font-size:10px;color:var(--text-dim);
+  background:var(--bg);padding:0 4px;position:relative;z-index:1;
+}
+
+.layer-clients{border-color:rgba(96,165,250,.3);}
+.layer-clients .arch-layer-header{background:rgba(59,130,246,.1);color:var(--accent2);}
+.layer-clients .layer-badge{background:rgba(59,130,246,.2);color:var(--accent2);}
+.layer-clients .arch-node:hover{border-color:rgba(96,165,250,.5);}
+
+.layer-gateway{border-color:rgba(168,85,247,.3);}
+.layer-gateway .arch-layer-header{background:rgba(168,85,247,.1);color:#c084fc;}
+.layer-gateway .layer-badge{background:rgba(168,85,247,.2);color:#c084fc;}
+.layer-gateway .arch-node:hover{border-color:rgba(168,85,247,.5);}
+
+.layer-services{border-color:rgba(34,197,94,.3);}
+.layer-services .arch-layer-header{background:rgba(34,197,94,.1);color:var(--green2);}
+.layer-services .layer-badge{background:rgba(34,197,94,.2);color:var(--green2);}
+.layer-services .arch-node:hover{border-color:rgba(34,197,94,.5);}
+
+.layer-ai{border-color:rgba(245,158,11,.3);}
+.layer-ai .arch-layer-header{background:rgba(245,158,11,.1);color:var(--amber2);}
+.layer-ai .layer-badge{background:rgba(245,158,11,.2);color:var(--amber2);}
+.layer-ai .arch-node:hover{border-color:rgba(245,158,11,.5);}
+
+.layer-data{border-color:rgba(6,182,212,.3);}
+.layer-data .arch-layer-header{background:rgba(6,182,212,.1);color:#22d3ee;}
+.layer-data .layer-badge{background:rgba(6,182,212,.2);color:#22d3ee;}
+.layer-data .arch-node:hover{border-color:rgba(6,182,212,.5);}
+
+.layer-integration{border-color:rgba(249,115,22,.3);}
+.layer-integration .arch-layer-header{background:rgba(249,115,22,.1);color:#fb923c;}
+.layer-integration .layer-badge{background:rgba(249,115,22,.2);color:#fb923c;}
+.layer-integration .arch-node:hover{border-color:rgba(249,115,22,.5);}
+
+.layer-infra{border-color:rgba(244,63,94,.3);}
+.layer-infra .arch-layer-header{background:rgba(244,63,94,.1);color:#fb7185;}
+.layer-infra .layer-badge{background:rgba(244,63,94,.2);color:#fb7185;}
+.layer-infra .arch-node:hover{border-color:rgba(244,63,94,.5);}
+
+.principle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:28px;}
+.principle-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;
+  transition:border-color .2s,transform .2s;
+  animation:fadeIn .3s ease both;
+}
+.principle-card:hover{transform:translateY(-3px);}
+.principle-card:nth-child(1){animation-delay:.05s;}
+.principle-card:nth-child(2){animation-delay:.1s;}
+.principle-card:nth-child(3){animation-delay:.15s;}
+.principle-card:nth-child(4){animation-delay:.2s;}
+.principle-card:nth-child(5){animation-delay:.25s;}
+.principle-card:nth-child(6){animation-delay:.3s;}
+.pc-icon{font-size:22px;margin-bottom:9px;}
+.pc-title{font-size:13.5px;font-weight:700;color:var(--white);margin-bottom:5px;}
+.pc-desc{font-size:12px;color:var(--text-sub);line-height:1.6;}
+.pc-tag{
+  display:inline-block;margin-top:10px;
+  font-size:9.5px;font-weight:700;padding:2px 9px;border-radius:20px;
+}
+
+.data-flow-grid{
+  display:grid;
+  grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;
+  gap:0;align-items:center;
+  margin-bottom:28px;
+}
+.dfn{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:18px 14px;text-align:center;
+  transition:border-color .2s,transform .2s;
+  animation:fadeIn .35s ease both;
+}
+.dfn:hover{transform:translateY(-3px);}
+.dfn:nth-child(1){animation-delay:.05s;}
+.dfn:nth-child(3){animation-delay:.1s;}
+.dfn:nth-child(5){animation-delay:.15s;}
+.dfn:nth-child(7){animation-delay:.2s;}
+.dfn .dfn-icon{font-size:26px;margin-bottom:7px;}
+.dfn .dfn-name{font-size:12.5px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.dfn .dfn-sub{font-size:10.5px;color:var(--text-dim);}
+.dfa{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:0 6px;
+  font-size:18px;color:var(--border2);
+}
+.dfa span{font-size:9px;color:var(--text-dim);letter-spacing:.3px;text-align:center;line-height:1.3;}
+
+/* ═══════════════════════ EXPANDABLE ARCH LAYERS */
+.arch-ctrl-btn{
+  font-size:10.5px;font-weight:600;padding:5px 13px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+  color:#94a3b8;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;
+}
+.arch-ctrl-btn:hover{background:rgba(255,255,255,.1);color:#e2e8f0;}
+
+/* Layer wrapper */
+.al{
+  border-radius:14px;
+  border:1px solid var(--lbd,rgba(59,130,246,.2));
+  border-left:3px solid var(--lc,#3b82f6);
+  background:var(--lbg,rgba(59,130,246,.06));
+  overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.al:hover{ box-shadow:0 2px 20px rgba(0,0,0,.3); }
+
+/* Layer header */
+.al-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;cursor:pointer;user-select:none;gap:12px;
+  transition:background .2s;
+}
+.al-head:hover{ background:rgba(255,255,255,.03); }
+.al-left{ display:flex;align-items:center;gap:12px;flex:1;min-width:0; }
+.al-right{ display:flex;align-items:center;gap:10px;flex-shrink:0; }
+
+.al-num{
+  font-size:10px;font-weight:800;font-family:'JetBrains Mono',monospace;
+  color:var(--lc);opacity:.55;flex-shrink:0;
+}
+.al-icon-wrap{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.al-name{
+  font-size:13.5px;font-weight:700;color:#e2e8f0;line-height:1.2;
+}
+.al-sub{ font-size:11px;color:#4b5563;margin-top:2px; }
+
+.al-chip{
+  font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;
+  border:1px solid;letter-spacing:.3px;white-space:nowrap;
+}
+.al-chevron{
+  font-size:16px;color:#374151;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  flex-shrink:0;
+}
+.al.al-open .al-chevron{ transform:rotate(180deg);color:var(--lc); }
+
+/* Layer body — animated collapse */
+.al-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .3s ease;
+  opacity:0;
+}
+.al.al-open .al-body{
+  max-height:2000px;
+  opacity:1;
+}
+.al-body > .al-grid{ padding:4px 18px 0; }
+.al-body > .al-grid.al-grid-wide{ padding:4px 18px 0; }
+
+/* Tech cards grid */
+.al-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:10px;
+  padding-bottom:4px;
+}
+.al-grid-wide{
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+}
+
+.al-card{
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;padding:13px 14px;
+  transition:border-color .2s,transform .18s,box-shadow .2s;
+  cursor:default;
+  animation:nodeIn .3s ease both;
+}
+.al-card:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb, var(--cc,#3b82f6) 50%, transparent);
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+}
+.al-card-hero{
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  grid-column:span 2;
+}
+@media(max-width:700px){.al-card-hero{grid-column:span 1;}}
+
+.al-card-icon{ font-size:20px;margin-bottom:8px;line-height:1; }
+.al-card-name{
+  font-size:12.5px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3;
+}
+.al-card-desc{
+  font-size:11.5px;color:#6b7280;line-height:1.55;
+}
+.al-badge-pill{
+  display:inline-block;margin-top:8px;
+  font-size:9.5px;font-weight:700;padding:2px 9px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.1);
+}
+
+/* Protocol bar at bottom of each layer */
+.al-proto-bar{
+  font-size:9.5px;font-weight:600;
+  color:color-mix(in srgb, var(--bc,#3b82f6) 70%, #94a3b8);
+  letter-spacing:.8px;text-transform:uppercase;
+  padding:10px 18px 14px;
+  border-top:1px solid rgba(255,255,255,.05);
+  margin-top:12px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* Connector between layers */
+.al-connector{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 0;
+}
+.al-conn-line{
+  width:2px;height:24px;background:rgba(255,255,255,.07);
+  border-radius:2px;position:relative;overflow:hidden;
+}
+.al-conn-dot{
+  width:2px;height:8px;border-radius:2px;
+  position:absolute;top:-8px;
+  animation:connFlow 2s linear infinite;
+}
+@keyframes connFlow{0%{top:-8px;}100%{top:100%;}}
+.al-conn-txt{
+  font-size:9px;color:#374151;letter-spacing:.5px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ═══════════════════════ SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px;}
+.sl-layer{
+  background:var(--lb,rgba(59,130,246,.07));
+  border:1px solid var(--ld,rgba(59,130,246,.2));
+  border-left:3px solid var(--lc,#3b82f6);
+  border-radius:14px;
+  padding:16px 18px 18px;
+  animation:fadeIn .4s ease both;
+}
+.sl-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:14px;flex-wrap:wrap;
+}
+.sl-num{
+  font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;
+  color:var(--lc,#3b82f6);opacity:.6;flex-shrink:0;
+}
+.sl-title{
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:#e2e8f0;flex-shrink:0;
+}
+.sl-badge{
+  font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid;letter-spacing:.3px;
+}
+.sl-line{flex:1;height:1px;background:rgba(255,255,255,.06);min-width:20px;}
+
+.sl-nodes{
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.sl-node{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;padding:7px 12px;
+  transition:border-color .2s,transform .15s,box-shadow .2s;
+  cursor:default;
+  animation:nodeIn .35s ease both;
+  animation-delay:var(--d,0s);
+  position:relative;
+}
+.sl-node:hover{
+  transform:translateY(-2px);
+  border-color:var(--nc,#3b82f6);
+  box-shadow:0 4px 16px rgba(0,0,0,.4),0 0 0 1px color-mix(in srgb, var(--nc,#3b82f6) 20%, transparent);
+}
+.sl-node-hero{
+  border-color:rgba(255,255,255,.14);
+  background:rgba(255,255,255,.04);
+}
+.sl-icon{font-size:15px;flex-shrink:0;line-height:1;}
+.sl-nname{font-size:11.5px;font-weight:600;color:#e2e8f0;}
+.sl-nsub{font-size:9.5px;color:#4b5563;margin-left:2px;}
+.sl-pulse-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--nc,#06b6d4);flex-shrink:0;
+  animation:dotPulse 2s ease-in-out infinite;
+}
+
+/* Connector between layers */
+.sl-connector{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:6px 0;
+  position:relative;
+}
+.sl-conn-line{
+  width:2px;height:28px;background:rgba(255,255,255,.08);
+  border-radius:2px;overflow:hidden;position:relative;
+}
+.sl-conn-pulse{
+  position:absolute;top:-100%;left:0;width:100%;height:100%;
+  animation:connPulse 2.5s ease-in-out infinite;
+}
+@keyframes connPulse{0%{top:-100%;}100%{top:100%;}}
+.sl-conn-label{
+  font-size:9px;color:#374151;letter-spacing:.5px;text-align:center;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ═══════════════════════ SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2);}
+
+/* ═══════════════════════ RESPONSIVE */
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%);}
+  #sidebar.expanded{transform:translateX(0);}
+  #main{margin-left:0;}
+  .page{padding:28px 24px;}
+  .card-body-grid{grid-template-columns:1fr;}
+  .ov-title{font-size:30px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ SIDEBAR TRIGGER (hover zone) -->
+<div id="sidebar-trigger"></div>
+<div id="sidebar-tab" onclick="sidebarLocked=true;expandSidebar();" title="Abrir menú"></div>
+
+<!-- ═══════════════════════ SIDEBAR RAIL (collapsed icons) -->
+<div class="sidebar-rail" id="sidebar-rail">
+  <div class="rail-icon" title="Resumen">⬡</div>
+  <div class="rail-icon" title="Proyectos">◫</div>
+  <div class="rail-icon" title="Stack">⬡</div>
+  <div class="rail-icon" title="Arquitectura">◈</div>
+  <div class="rail-icon" title="Inversión">◈</div>
+  <div class="rail-icon" title="Mercado">◉</div>
+  <div class="rail-icon" title="ROI">◎</div>
+  <div class="rail-icon" title="Estratégico">◆</div>
+</div>
+
+<!-- ═══════════════════════ SIDEBAR -->
+<nav id="sidebar">
+  <div id="sidebar-close" onclick="collapseSidebar()" title="Cerrar menú">✕</div>
+  <div class="sidebar-brand">
+    <span class="brand-badge">Reporte Ejecutivo · 2026</span>
+    <div class="brand-name">Unidad de<br/>Inteligencia</div>
+    <div class="brand-sub">Ecosistema Tecnológico</div>
+  </div>
+
+  <div class="sidebar-section-label">Navegación</div>
+
+  <a class="nav-item active" onclick="showPage('overview')" href="#">
+    <span class="icon">⬡</span> Resumen Ejecutivo
+  </a>
+  <a class="nav-item" onclick="showPage('projects')" href="#">
+    <span class="icon">◫</span> Los Proyectos
+    <span class="badge">15</span>
+  </a>
+  <a class="nav-item" onclick="showPage('stack')" href="#">
+    <span class="icon">⬡</span> Stack Tecnológico
+    <span class="badge">40+</span>
+  </a>
+  <a class="nav-item" onclick="showPage('arquitectura')" href="#">
+    <span class="icon">◈</span> Arquitectura
+  </a>
+  <a class="nav-item" onclick="showPage('ciberseguridad')" href="#">
+    <span class="icon">🔒</span> Ciberseguridad
+  </a>
+  <a class="nav-item" onclick="showPage('planes')" href="#">
+    <span class="icon">⬢</span> Planes 2026
+    <span class="badge" style="background:rgba(20,184,166,.2);color:#2dd4bf;">Nuevo</span>
+  </a>
+
+  <div class="sidebar-section-label">Análisis Financiero</div>
+
+  <a class="nav-item" onclick="showPage('inversion')" href="#">
+    <span class="icon">◈</span> Inversión
+  </a>
+  <a class="nav-item" onclick="showPage('mercado')" href="#">
+    <span class="icon">◉</span> Valor de Mercado
+  </a>
+  <a class="nav-item" onclick="showPage('roi')" href="#">
+    <span class="icon">◎</span> ROI & Proyección
+  </a>
+  <a class="nav-item" onclick="showPage('estrategico')" href="#">
+    <span class="icon">◆</span> Valor Estratégico
+  </a>
+
+  <div class="sidebar-footer">
+    <strong>Confidencial Interno</strong><br/>
+    Generado: Marzo 2026
+  </div>
+</nav>
+
+<!-- ═══════════════════════ MAIN -->
+<main id="main">
+
+<!-- ─────────── PAGE: OVERVIEW -->
+<div class="page active" id="page-overview">
+  <div class="overview-cover">
+    <div class="ov-badge"><span class="ov-dot"></span> Sistema Activo · Producción</div>
+    <div class="ov-title">Ecosistema Digital de<br/><span>Nivel Enterprise</span></div>
+    <p class="ov-subtitle">La Unidad de Inteligencia ha construido un portafolio de 15 sistemas propios que cubren toda la cadena operativa de la empresa — desde el reclutamiento biométrico hasta la trazabilidad de materiales con Machine Learning.</p>
+    <div class="ov-stats">
+      <div class="ov-stat"><div class="val">15</div><div class="lbl">Proyectos activos</div></div>
+      <div class="ov-stat"><div class="val">40+</div><div class="lbl">Tecnologías</div></div>
+      <div class="ov-stat"><div class="val">5</div><div class="lbl">Sistemas con IA/ML</div></div>
+      <div class="ov-stat"><div class="val">6+</div><div class="lbl">Modelos entrenados</div></div>
+      <div class="ov-stat"><div class="val">GCP</div><div class="lbl">Cloud nativo</div></div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card" style="--kpi-color:#3b82f6">
+      <div class="kpi-val">$4.5M</div>
+      <div class="kpi-label">Inversión MXN est.</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#22c55e">
+      <div class="kpi-val">$3.1M</div>
+      <div class="kpi-label">Ahorro anual MXN</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#f59e0b">
+      <div class="kpi-val">18 m</div>
+      <div class="kpi-label">Break-even estimado</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#a855f7">
+      <div class="kpi-val">$15M</div>
+      <div class="kpi-label">Valor reposición MXN</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#14b8a6">
+      <div class="kpi-val">$5M+</div>
+      <div class="kpi-label">Potencial SaaS / año</div>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <h4>¿Por qué este ecosistema es único e irreemplazable?</h4>
+      <ul>
+        <li>Todos los sistemas se integran con <strong>SINGA</strong> (SQL Server corporativo) — imposible con software genérico del mercado.</li>
+        <li>Los modelos YOLO están <strong>entrenados con imágenes propias</strong> de la empresa: uniformes, botellas, instalaciones.</li>
+        <li>Los <strong>embeddings biométricos</strong> (ArcFace) son activos intangibles que pertenecen 100% a la Unidad de Inteligencia.</li>
+        <li>Tres proyectos (Reclut.ai, Contratación Inteligente, Supervisiones) son <strong>productos listos para licenciar</strong> a terceros.</li>
+        <li>El <strong>CRM de Ventas</strong> y el módulo de <strong>Recursos Humanos</strong> de SUMCO ERP se integran directamente con SINGA: pipeline comercial, plantilla y nómina sin re-captura manual de datos.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">Distribución por área operativa</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+    <div class="card" style="margin-bottom:0;">
+      <div style="padding:22px 24px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;">Por tipo de sistema</div>
+        <div class="prog-row"><span class="prog-label">ERP / Operaciones</span><div class="prog-bar"><div class="prog-fill" style="width:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div><span class="prog-count">3</span></div>
+        <div class="prog-row"><span class="prog-label">RRHH / Reclutamiento</span><div class="prog-bar"><div class="prog-fill" style="width:100%;background:linear-gradient(90deg,#22c55e,#4ade80);"></div></div><span class="prog-count">3</span></div>
+        <div class="prog-row"><span class="prog-label">IA / Computer Vision</span><div class="prog-bar"><div class="prog-fill" style="width:83%;background:linear-gradient(90deg,#a855f7,#c084fc);"></div></div><span class="prog-count">5</span></div>
+        <div class="prog-row"><span class="prog-label">AUTOMATIZACIÓN / Calidad</span><div class="prog-bar"><div class="prog-fill" style="width:83%;background:linear-gradient(90deg,#14b8a6,#2dd4bf);"></div></div><span class="prog-count">3</span></div>
+        <div class="prog-row"><span class="prog-label">BI / Análisis</span><div class="prog-bar"><div class="prog-fill" style="width:66%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div><span class="prog-count">4</span></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div style="padding:22px 24px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;">Por complejidad técnica</div>
+        <div class="prog-row"><span class="prog-label">Extrema (ERP + YOLO)</span><div class="prog-bar"><div class="prog-fill" style="width:22%;background:#f43f5e;"></div></div><span class="prog-count">2</span></div>
+        <div class="prog-row"><span class="prog-label">Alta (IA + Cloud)</span><div class="prog-bar"><div class="prog-fill" style="width:55%;background:#f97316;"></div></div><span class="prog-count">7</span></div>
+        <div class="prog-row"><span class="prog-label">Media</span><div class="prog-bar"><div class="prog-fill" style="width:55%;background:#f59e0b;"></div></div><span class="prog-count">6</span></div>
+        <div class="prog-row"><span class="prog-label">Baja</span><div class="prog-bar"><div class="prog-fill" style="width:25%;background:#22c55e;"></div></div><span class="prog-count">3</span></div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <span style="font-size:12px;color:var(--text-sub);">Horas totales estimadas:</span>
+          <span style="font-size:18px;font-weight:700;color:var(--white);margin-left:10px;">4,200 – 7,600 hrs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: PROJECTS -->
+<div class="page" id="page-projects">
+  <div class="page-header">
+    <div class="page-eyebrow">Catálogo completo</div>
+    <div class="page-title">Los <span>15 sistemas</span> en detalle</div>
+    <p class="page-desc">Cada proyecto documentado: propósito, tecnologías, funcionalidades, beneficios operativos e inversión estimada. Haz clic en cualquier tarjeta para expandir.</p>
+  </div>
+
+  <div class="section-title">Alta complejidad — ERP & Visión Artificial</div>
+
+  <!-- SUMCO CRM -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(59,130,246,.15);">🏭</div>
+      <div class="card-header-meta">
+        <h3>SUMCO ERP — ERP Corporativo Completo</h3>
+        <p class="tagline">Sistema de planificación empresarial con 13 módulos: pedidos, compras, inventario, logística, fabricación, rutas GPS, <strong>CRM de ventas</strong> y <strong>Recursos Humanos</strong> integrados con SINGA.</p>
+        <div class="tags">
+          <span class="tag tag-blue">Next.js 16</span>
+          <span class="tag tag-blue">React 19</span>
+          <span class="tag tag-blue">TypeScript</span>
+          <span class="tag tag-green">FastAPI</span>
+          <span class="tag tag-green">PostgreSQL</span>
+          <span class="tag tag-purple">Machine Learning</span>
+          <span class="tag tag-orange">Google Cloud</span>
+          <span class="tag tag-teal">GPS / OSRM</span>
+          <span class="complexity-pill cp-extreme">Complejidad Extrema</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Ciclo de vida de pedidos: Borrador → Confirmado → Entregado</li>
+            <li>Flujo de compras: REQ → Orden de Compra → Recepción</li>
+            <li>Control de stock con movimientos Kardex completos</li>
+            <li>Trazabilidad de lotes: Recepción → Proceso → Calidad → Liberado</li>
+            <li>Rutas GPS inteligentes con OpenStreetMap y OSRM</li>
+            <li>Calculadora de materias primas con scikit-learn (ML)</li>
+            <li><strong>CRM de Ventas</strong>: pipeline 9 etapas, prospectos, cotizaciones y alertas</li>
+            <li><strong>Recursos Humanos</strong>: empleados activos, plantilla y nómina desde SINGA</li>
+            <li>Clientes & Proveedores: gestión centralizada con historial</li>
+            <li>Control MP/PP/PT, fórmulas de mezclado y fabricación</li>
+            <li>Control de uniformes y robots de limpieza (Pudu)</li>
+            <li>Integración bidireccional con SINGA (SQL Server)</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Elimina el uso de Excel en compras, ventas e inventario</li>
+            <li>CRM con pipeline visual: seguimiento de prospectos hasta cierre</li>
+            <li>RH conectado a SINGA: plantilla y nómina sin re-captura</li>
+            <li>Trazabilidad total de materiales con evidencia digital</li>
+            <li>Optimización de rutas = menos combustible y tiempo</li>
+            <li>ML predice necesidades de MP = cero desperdicios</li>
+            <li>Auditoría inmutable: cada movimiento queda registrado</li>
+            <li>Accesible desde cualquier dispositivo con internet</li>
+            <li>Reemplaza SAP, Odoo o Microsoft Dynamics</li>
+            <li>13 módulos en un solo sistema con integración nativa SINGA</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">13 módulos integrados</span>
+        <span class="meta-tag">CRM Ventas + RH + Nómina</span>
+        <span class="meta-tag">2 modelos ML · Robots Pudu</span>
+        <span class="meta-tag">Docker + GCP Cloud Run</span>
+      </div>
+      <div class="inv-badge">Inversión: $32,000 – $60,000 USD</div>
+    </div>
+  </div>
+
+  <!-- CRM SUPERVISIONES -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(34,197,94,.15);">🔍</div>
+      <div class="card-header-meta">
+        <h3>Supervisión inteligente — Visión Artificial en Campo</h3>
+        <p class="tagline">Supervisiones de campo con detección automática de uniformes y equipos usando modelos YOLO entrenados con datos propios.</p>
+        <div class="tags">
+          <span class="tag tag-green">FastAPI</span>
+          <span class="tag tag-purple">YOLO v11 Custom</span>
+          <span class="tag tag-purple">Computer Vision</span>
+          <span class="tag tag-green">PostgreSQL</span>
+          <span class="tag tag-orange">Cloud Run + GCS</span>
+          <span class="tag tag-rose">409 MB</span>
+          <span class="complexity-pill cp-extreme">Complejidad Extrema</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Detección automática de uniformes con YOLO entrenado</li>
+            <li>Detección de botellas y equipos de protección</li>
+            <li>Matching automático de imágenes con IA</li>
+            <li>Historial de uniformes y botellas por trabajador</li>
+            <li>Generación de reportes PDF automáticos</li>
+            <li>Dashboard de supervisiones por inmueble</li>
+            <li>Alertas de gestión ante incumplimientos detectados</li>
+            <li>Almacenamiento en Google Cloud Storage</li>
+            <li>app.py con 1,780 líneas de lógica compleja</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Supervisión sin papel ni planillas manuales</li>
+            <li>La IA detecta incumplimientos que el ojo humano pasa por alto</li>
+            <li>Evidencia fotográfica inmutable para auditorías</li>
+            <li>Historial digital de dotación por trabajador</li>
+            <li>Reducción de tiempo por supervisor por visita</li>
+            <li>Reportes generados en segundos</li>
+            <li>Modelos YOLO entrenados con datos de SCMX: irreemplazables</li>
+            <li>Escalable a cientos de sitios sin costo adicional</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">409 MB en disco</span>
+        <span class="meta-tag">best.pt + yolo11s.pt</span>
+        <span class="meta-tag">reportes_utils.py 761 líneas</span>
+        <span class="meta-tag">Docker + Cloud Run</span>
+      </div>
+      <div class="inv-badge">Inversión: $18,000 – $35,000 USD</div>
+    </div>
+  </div>
+
+  <div class="section-title">Alta complejidad — IA, Chatbots y Plataformas</div>
+
+  <!-- QUEJAS CRM -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(168,85,247,.15);">🤖</div>
+      <div class="card-header-meta">
+        <h3>Plataforma quejas + Chatbot IA</h3>
+        <p class="tagline">Gestión de quejas con asistente IA que responde en lenguaje natural, consulta datos en tiempo real via SQL y mantiene sesiones persistentes con RAG documental.</p>
+        <div class="tags">
+          <span class="tag tag-green">Flask + FastAPI</span>
+          <span class="tag tag-purple">OpenAI / LLM</span>
+          <span class="tag tag-purple">RAG Documental</span>
+          <span class="tag tag-blue">SSE Streaming</span>
+          <span class="tag tag-orange">Google Cloud SQL</span>
+          <span class="tag tag-rose">221 MB</span>
+          <span class="complexity-pill cp-high">Complejidad Alta</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Registro y seguimiento completo de quejas de clientes</li>
+            <li>Chatbot IA con respuestas en streaming (SSE)</li>
+            <li>Enrutamiento inteligente: help / data / ops_risk</li>
+            <li>Consultas SQL en lenguaje natural (solo lectura)</li>
+            <li>RAG: responde basado en documentos internos</li>
+            <li>Sesiones persistentes con historial completo</li>
+            <li>Auditoría inmutable en inventory_ai.chat_logs</li>
+            <li>RBAC: admin, operador, auditor</li>
+            <li>app.py con 3,386 líneas · db.py con 616 líneas</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Analista de datos disponible 24/7 sin costo adicional</li>
+            <li>Supervisores consultan datos en lenguaje natural</li>
+            <li>Reduce carga del área IT para reportes ad-hoc</li>
+            <li>Registro completo de quejas con trazabilidad temporal</li>
+            <li>Cumplimiento normativo: toda interacción auditada</li>
+            <li>Control de acceso granular por rol y función</li>
+            <li>Reducción del tiempo de respuesta a clientes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">221 MB en disco</span>
+        <span class="meta-tag">78 archivos de código</span>
+        <span class="meta-tag">Cloud SQL Proxy</span>
+        <span class="meta-tag">Docker producción</span>
+      </div>
+      <div class="inv-badge">Inversión: $16,000 – $28,000 USD</div>
+    </div>
+  </div>
+
+  <!-- CONTRATACIÓN INTELIGENTE -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(249,115,22,.15);">📋</div>
+      <div class="card-header-meta">
+        <h3>Contratación Inteligente — Document AI + Biometría</h3>
+        <p class="tagline">Automatiza la contratación: OCR de documentos, validación cruzada de identidad, verificación de selfie con YOLO y ranking inteligente de vacantes.</p>
+        <div class="tags">
+          <span class="tag tag-green">Flask</span>
+          <span class="tag tag-purple">Google Document AI</span>
+          <span class="tag tag-purple">YOLO v8</span>
+          <span class="tag tag-purple">MediaPipe</span>
+          <span class="tag tag-purple">PyTorch</span>
+          <span class="tag tag-orange">Cloud Run</span>
+          <span class="complexity-pill cp-high">Complejidad Alta</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>OCR de documentos en 2 pasadas (máxima precisión)</li>
+            <li>Validación cruzada entre INE, CURP, IMSS</li>
+            <li>Verificación de selfie: sin sombreros ni lentes</li>
+            <li>Escaneo y validación de códigos QR en documentos</li>
+            <li>Ranking inteligente de vacantes recomendadas</li>
+            <li>Integración directa con API EmplateYA (SINGA)</li>
+            <li>3 modelos: yolov8n.pt, glasses.pt, hat.pt</li>
+            <li>Detección de rostro con MediaPipe pose/hand</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Proceso de contratación: días → minutos</li>
+            <li>Elimina errores de captura manual de documentos</li>
+            <li>Verifica autenticidad de identidad automáticamente</li>
+            <li>Detecta documentos alterados o inconsistentes</li>
+            <li>Alta directa al sistema SINGA sin intermediarios</li>
+            <li>Escalable: procesa cientos de solicitudes en paralelo</li>
+            <li>Reduce fraudes en el proceso de contratación</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">glasses.pt 6 MB</span>
+        <span class="meta-tag">hat.pt 6 MB</span>
+        <span class="meta-tag">PyTorch + Torchvision</span>
+        <span class="meta-tag">Google Document AI API</span>
+      </div>
+      <div class="inv-badge">Inversión: $15,000 – $25,000 USD</div>
+    </div>
+  </div>
+
+  <!-- RECLUT.AI -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(59,130,246,.15);">🎯</div>
+      <div class="card-header-meta">
+        <h3>Reclut.ai — Plataforma SaaS de Reclutamiento</h3>
+        <p class="tagline">Plataforma integral de reclutamiento con vacantes, candidatos, academia de capacitación y planes de suscripción. Diseñada para ser vendida como SaaS.</p>
+        <div class="tags">
+          <span class="tag tag-green">FastAPI + SQLAlchemy</span>
+          <span class="tag tag-blue">JWT + OAuth2</span>
+          <span class="tag tag-orange">Stripe / Conekta</span>
+          <span class="tag tag-teal">Academia integrada</span>
+          <span class="tag tag-rose">204 MB</span>
+          <span class="complexity-pill cp-high">Complejidad Alta</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Publicación y gestión completa de vacantes</li>
+            <li>Perfiles de candidatos con carga de CV</li>
+            <li>Academia de cursos y capacitaciones integrada</li>
+            <li>Sistema de evaluaciones y scoring</li>
+            <li>Planes de precios con integración de pagos</li>
+            <li>Dashboard por rol: postulante / reclutador / admin</li>
+            <li>Sistema de mensajería interna</li>
+            <li>Autenticación JWT + bcrypt segura</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Proceso de reclutamiento digital end-to-end</li>
+            <li>Capacitación antes del ingreso en la misma plataforma</li>
+            <li>Elimina dependencia de OCC, LinkedIn u otros portales</li>
+            <li>Base de candidatos propia = ventaja competitiva</li>
+            <li>Potencial SaaS: $500–$2,000 USD/mes por empresa</li>
+            <li>Modelo de negocio adicional para la UI</li>
+            <li>Pagos integrados listos para activar</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">204 MB en disco</span>
+        <span class="meta-tag">3 roles de usuario</span>
+        <span class="meta-tag">Pagos integrados</span>
+        <span class="meta-tag">Academia de cursos</span>
+      </div>
+      <div class="inv-badge">Inversión: $16,000 – $28,000 USD</div>
+    </div>
+  </div>
+
+  <!-- RECONOCIMIENTO FACIAL -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(244,63,94,.15);">👁️</div>
+      <div class="card-header-meta">
+        <h3>Reconocimiento Facial — Control Biométrico de Asistencia</h3>
+        <p class="tagline">Terminal biométrica con ArcFace (InsightFace) para control de presencia laboral. Modo kiosco, validación de liveness y detección de suplantaciones.</p>
+        <div class="tags">
+          <span class="tag tag-green">FastAPI</span>
+          <span class="tag tag-purple">InsightFace ArcFace</span>
+          <span class="tag tag-purple">ONNX Runtime</span>
+          <span class="tag tag-blue">OpenCV contrib</span>
+          <span class="tag tag-teal">Liveness Detection</span>
+          <span class="complexity-pill cp-high">Complejidad Alta</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Reconocimiento facial con vectores ArcFace (buffalo_l)</li>
+            <li>Validación de liveness: no acepta fotos ni pantallas</li>
+            <li>Registro de checkins confirmados y fallidos</li>
+            <li>Alertas de seguridad ante posibles suplantaciones</li>
+            <li>Dashboard diario de asistencia por turno</li>
+            <li>Consultas operativas: llegadas tarde, fraudes</li>
+            <li>Opera sin teclado en modo kiosco táctil</li>
+            <li>Multi-sitio: soporte para varios inmuebles</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Elimina el "buddy punching" de forma definitiva</li>
+            <li>No requiere tarjetas ni PINs que se puedan compartir</li>
+            <li>Registro exacto y automatizado de horas laboradas</li>
+            <li>Auditoría completa: todos los intentos quedan registrados</li>
+            <li>Reducción de fraudes laborales con evidencia biométrica</li>
+            <li>Integrable con nómina para control de horas</li>
+            <li>Vendible a terceros: $2,000–$5,000 USD por instalación</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">ArcFace buffalo_l</span>
+        <span class="meta-tag">ONNX Runtime</span>
+        <span class="meta-tag">arcface_embeddings.npz</span>
+        <span class="meta-tag">Multi-inmueble</span>
+      </div>
+      <div class="inv-badge">Inversión: $12,500 – $22,500 USD</div>
+    </div>
+  </div>
+
+  <!-- PLATAFORMA UI -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(20,184,166,.15);">🖥️</div>
+      <div class="card-header-meta">
+        <h3>Plataforma UI — Command Center Corporativo</h3>
+        <p class="tagline">Dashboard ejecutivo central: proyectos, tickets, sistemas, comunicados y roadmap estratégico. OpenAI integrado para procesamiento de documentos.</p>
+        <div class="tags">
+          <span class="tag tag-blue">JavaScript ES2022</span>
+          <span class="tag tag-green">FastAPI + Alembic</span>
+          <span class="tag tag-purple">OpenAI integrado</span>
+          <span class="tag tag-orange">Google Cloud Storage</span>
+          <span class="tag tag-blue">pdfplumber</span>
+          <span class="complexity-pill cp-high">Complejidad Alta</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Módulos incluidos</h4>
+          <ul>
+            <li>Dashboard con KPIs ejecutivos en tiempo real</li>
+            <li>Portafolio de proyectos con estados y avances</li>
+            <li>Tickets de soporte clasificados por severidad</li>
+            <li>Hub de sistemas con salud e infraestructura</li>
+            <li>Repositorio de documentos con procesamiento PDF</li>
+            <li>Comunicados corporativos por canal</li>
+            <li>Roadmap estratégico Q2/Q3 2026</li>
+            <li>Command palette (Ctrl+K) para búsqueda global</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Dirección monitorea sin depender de reportes manuales</li>
+            <li>Centraliza comunicación interna en un solo lugar</li>
+            <li>Elimina dispersión en correos y chats</li>
+            <li>Seguimiento del roadmap visible para dirección</li>
+            <li>OpenAI procesa PDFs automáticamente</li>
+            <li>Reemplaza Monday.com, Jira y herramientas similares</li>
+            <li>2 migraciones Alembic: schema bien definido</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">84 MB en disco</span>
+        <span class="meta-tag">Migraciones Alembic</span>
+        <span class="meta-tag">OpenAI API</span>
+        <span class="meta-tag">3 roles: admin / líder / cliente</span>
+      </div>
+      <div class="inv-badge">Inversión: $12,000 – $24,000 USD</div>
+    </div>
+  </div>
+
+  <div class="section-title">Complejidad media — Operaciones y Análisis</div>
+
+  <!-- ANÁLISIS MATERIAL SINGA -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(59,130,246,.15);">📊</div>
+      <div class="card-header-meta">
+        <h3>Análisis Histórico de Material — Inteligencia desde SINGA</h3>
+        <p class="tagline">Aplicación desktop que extrae datos históricos de SQL Server SINGA y genera análisis estadísticos, detección automática de anomalías y tendencias de consumo por cliente.</p>
+        <div class="tags">
+          <span class="tag tag-blue">Python + Tkinter</span>
+          <span class="tag tag-green">pandas</span>
+          <span class="tag tag-green">openpyxl</span>
+          <span class="tag tag-teal">pyodbc SQL Server</span>
+          <span class="tag tag-blue">SQLite caché</span>
+          <span class="complexity-pill cp-medium">Complejidad Media</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>ETL completo desde SQL Server (SINGA) hacia SQLite local</li>
+            <li>Detección estadística de anomalías con Z-score</li>
+            <li>Agregación mensual de consumos por material y cliente</li>
+            <li>Comparativa entre periodos (mes a mes, año a año)</li>
+            <li>Análisis de tendencias de consumo por cliente</li>
+            <li>Ratio de frecuencia esperada vs frecuencia real</li>
+            <li>Exportación a Excel con formato profesional</li>
+            <li>Caché SQLite de 363 MB para consultas rápidas sin saturar SINGA</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Convierte datos crudos de SINGA en inteligencia de negocio accionable</li>
+            <li>Detecta consumos anómalos automáticamente: posibles desperdicios o fraudes</li>
+            <li>Identifica clientes con desviaciones en consumo esperado</li>
+            <li>No sobrecarga el servidor SINGA — usa caché local de 363 MB</li>
+            <li>No requiere conocimientos de SQL para operar</li>
+            <li>Exporta reportes a Excel listos para presentar a dirección</li>
+            <li>Disponible como aplicación de escritorio sin necesidad de internet</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">Caché SQLite 363 MB</span>
+        <span class="meta-tag">Interfaz desktop</span>
+        <span class="meta-tag">Integración SINGA</span>
+        <span class="meta-tag">Z-score analytics</span>
+      </div>
+      <div class="inv-badge">Inversión: $7,000 – $12,250 USD</div>
+    </div>
+  </div>
+
+  <!-- PRUEBAS PSICOMÉTRICAS -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(245,158,11,.15);">🧠</div>
+      <div class="card-header-meta">
+        <h3>Pruebas Psicométricas — Evaluación Estandarizada de Personal</h3>
+        <p class="tagline">Plataforma web para administrar baterías de pruebas psicométricas, calcular scores automáticamente y mantener historial completo de candidatos evaluados.</p>
+        <div class="tags">
+          <span class="tag tag-green">Flask</span>
+          <span class="tag tag-green">SQLite</span>
+          <span class="tag tag-blue">HTML / CSS / JS</span>
+          <span class="tag tag-amber">app.py 58 KB</span>
+          <span class="complexity-pill cp-medium">Complejidad Media</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Gestión de baterías de cuestionarios psicométricos</li>
+            <li>Aplicación de pruebas vía interfaz web responsive</li>
+            <li>Cálculo automático de scores y perfiles por candidato</li>
+            <li>Historial completo de evaluaciones por persona</li>
+            <li>Reportes de resultados por evaluador y período</li>
+            <li>Control de acceso por roles (evaluador, candidato, admin)</li>
+            <li>Actualizado activamente — última revisión marzo 2026</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Estandariza la evaluación: todos los candidatos pasan el mismo proceso</li>
+            <li>Elimina hojas de papel, calificación manual y errores humanos</li>
+            <li>Historial digital para análisis de tendencias de selección</li>
+            <li>Reduce sesgos en el proceso de selección de personal</li>
+            <li>Integrable con Reclut.ai y Contratación Inteligente</li>
+            <li>Disponible desde cualquier dispositivo con navegador</li>
+            <li>Ahorra horas de trabajo al equipo de RRHH por candidato</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">app.py 58 KB</span>
+        <span class="meta-tag">Actualizado marzo 2026</span>
+        <span class="meta-tag">Web responsive</span>
+      </div>
+      <div class="inv-badge">Inversión: $5,250 – $10,500 USD</div>
+    </div>
+  </div>
+
+  <!-- CRM ENCUESTAS CALIDAD -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(34,197,94,.15);">⭐</div>
+      <div class="card-header-meta">
+        <h3>Encuestas de Calidad — automatizadas por WhatsApp</h3>
+        <p class="tagline">Sistema de gestión de encuestas de satisfacción con envío automático por WhatsApp vía Twilio y dashboard de métricas de calidad en tiempo real.</p>
+        <div class="tags">
+          <span class="tag tag-green">Flask</span>
+          <span class="tag tag-green">SQLite</span>
+          <span class="tag tag-teal">Twilio WhatsApp</span>
+          <span class="tag tag-blue">HTML / CSS / JS</span>
+          <span class="complexity-pill cp-medium">Complejidad Media</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Registro y gestión centralizada de clientes</li>
+            <li>Creación y distribución de encuestas personalizadas</li>
+            <li>Envío automático por WhatsApp mediante API Twilio</li>
+            <li>Formulario público de respuestas (sin login requerido)</li>
+            <li>Dashboard en tiempo real con métricas por cliente e inmueble</li>
+            <li>Seguimiento de tasa de respuesta y tendencias</li>
+            <li>Historial de encuestas y resultados por período</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Mide la satisfacción del cliente de forma sistemática, no anecdótica</li>
+            <li>WhatsApp tiene tasa de apertura del 98% vs 20% del email</li>
+            <li>Detecta problemas antes de que el cliente cancele o escale</li>
+            <li>Genera evidencia documentada de calidad para auditorías y licitaciones</li>
+            <li>Diferenciador competitivo: demuestra compromiso con la calidad</li>
+            <li>Automatiza un proceso que antes era manual o inexistente</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">Twilio WhatsApp API</span>
+        <span class="meta-tag">Formulario público</span>
+        <span class="meta-tag">Dashboard en tiempo real</span>
+      </div>
+      <div class="inv-badge">Inversión: $5,250 – $10,500 USD</div>
+    </div>
+  </div>
+
+  <!-- MEXIUSA -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(168,85,247,.15);">🛒</div>
+      <div class="card-header-meta">
+        <h3>Proyecto Mexiusa — CRM + Price Intelligence</h3>
+        <p class="tagline">CRM/ERP ligero con módulo especial de Price Watch: scraping automático de precios en Amazon y Mercado Libre para inteligencia competitiva de mercado.</p>
+        <div class="tags">
+          <span class="tag tag-green">FastAPI</span>
+          <span class="tag tag-green">PostgreSQL + Alembic</span>
+          <span class="tag tag-blue">BeautifulSoup</span>
+          <span class="tag tag-teal">Web Scraping</span>
+          <span class="tag tag-orange">Docker Compose</span>
+          <span class="tag tag-purple">pytest</span>
+          <span class="complexity-pill cp-medium">Complejidad Media</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Gestión completa de productos y catálogo</li>
+            <li>Control de almacenes, ubicaciones y zonas</li>
+            <li>Movimientos de inventario y reconciliación de conteos</li>
+            <li>Logística y asignación de rutas</li>
+            <li>Price Watch: monitoreo automático de precios en Amazon y ML</li>
+            <li>Analytics de precios históricos por producto</li>
+            <li>Auditoría estructurada con JSON logging inmutable</li>
+            <li>5 roles de acceso: admin, auditor, operador, logística, dirección</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Inteligencia de precios de la competencia en tiempo real</li>
+            <li>Permite ajuste dinámico de precios basado en datos reales del mercado</li>
+            <li>ERP ligero sin costos de licencia de SAP u Odoo</li>
+            <li>Auditoría inmutable de todos los movimientos de inventario</li>
+            <li>Scraping propio = sin dependencia de APIs de pago</li>
+            <li>Tests automatizados con pytest garantizan estabilidad</li>
+            <li>Completamente dockerizado: desplegable en cualquier entorno</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">Docker Compose</span>
+        <span class="meta-tag">pytest</span>
+        <span class="meta-tag">Alembic migraciones</span>
+        <span class="meta-tag">Price Watch Amazon + ML</span>
+      </div>
+      <div class="inv-badge">Inversión: $12,000 – $20,000 USD</div>
+    </div>
+  </div>
+
+  <!-- BATIA BRAINHUB -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(6,182,212,.15);">🧩</div>
+      <div class="card-header-meta">
+        <h3>Batia-BrainHub — Plataforma Multi-Empresa</h3>
+        <p class="tagline">Plataforma centralizada que gestiona simultáneamente múltiples empresas cliente (Aurora, Horizon, Mercurio, Nimbus, Zenit) con datos aislados por cuenta.</p>
+        <div class="tags">
+          <span class="tag tag-green">FastAPI</span>
+          <span class="tag tag-blue">Tailwind CSS</span>
+          <span class="tag tag-green">Jinja2 Templates</span>
+          <span class="tag tag-blue">JavaScript</span>
+          <span class="tag tag-orange">Node.js build</span>
+          <span class="complexity-pill cp-medium">Complejidad Media</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Plataforma independiente para 5 empresas: Aurora, Horizon, Mercurio, Nimbus, Zenit (ejemplos)</li>
+            <li>Datos JSON aislados por cuenta cliente</li>
+            <li>Templates Jinja2 reutilizables por empresa</li>
+            <li>Interfaz moderna con Tailwind CSS compilado</li>
+            <li>Scripts de build: dev:css y build:css con Node.js</li>
+            <li>Backend FastAPI con rutas por empresa</li>
+            <li>Arquitectura multi-tenant escalable</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Un solo sistema gestiona múltiples cuentas o subsidiarias</li>
+            <li>Cada empresa ve únicamente sus propios datos</li>
+            <li>Interfaz moderna con Tailwind: fácil de personalizar por cliente</li>
+            <li>Arquitectura lista para crecer a más empresas sin rediseño</li>
+            <li>Reduce costos de mantenimiento vs tener una plataforma por empresa</li>
+            <li>Base ideal para ofrecer como servicio a terceros</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">5 empresas integradas</span>
+        <span class="meta-tag">Tailwind CSS build</span>
+        <span class="meta-tag">Multi-tenant</span>
+        <span class="meta-tag">Jinja2 templates</span>
+      </div>
+      <div class="inv-badge">Inversión: $8,000 – $16,000 USD</div>
+    </div>
+  </div>
+
+  <!-- N8N -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(244,63,94,.15);">🔄</div>
+      <div class="card-header-meta">
+        <h3>n8n — Orquestador de Workflows y Automatización</h3>
+        <p class="tagline">Instancia n8n dockerizada que actúa como "pegamento" entre todos los sistemas del ecosistema. Automatiza flujos sin código y conecta más de 400 integraciones.</p>
+        <div class="tags">
+          <span class="tag tag-rose">n8n</span>
+          <span class="tag tag-orange">Docker Compose</span>
+          <span class="tag tag-green">PostgreSQL</span>
+          <span class="tag tag-blue">400+ integraciones</span>
+          <span class="complexity-pill cp-low">Complejidad Baja</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>UI visual en http://localhost:5678 para crear workflows</li>
+            <li>Volumen persistente de datos local (n8n_data)</li>
+            <li>Conexión a PostgreSQL externa para historial de ejecuciones</li>
+            <li>Variables de entorno para configuración segura</li>
+            <li>Soporte para webhooks, cron jobs y triggers por evento</li>
+            <li>400+ nodos disponibles: Gmail, Slack, WhatsApp, Sheets, HTTP</li>
+            <li>Ejecución local: los datos no salen de la empresa</li>
+            <li><strong>sincronizacion_BD.py</strong> — script activo que replica tablas de SINGA (SQL Server) hacia PostgreSQL en Docker automáticamente, sin saturar ni exponer el servidor de producción</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Lo que puede conectar</h4>
+          <ul>
+            <li>Alerta automática cuando llega una queja nueva a cualquier plataforma</li>
+            <li>Envía encuesta de calidad al cerrar un contrato de servicio</li>
+            <li>Notifica por WhatsApp cuando un candidato avanza de etapa</li>
+            <li>Sincroniza datos entre sistemas que no se comunican nativamente</li>
+            <li>Genera reportes automáticos y los envía por correo o Slack</li>
+            <li>Dispara contratación en SINGA al aprobar un candidato en Reclut.ai</li>
+            <li>Reduce a cero las tareas manuales repetitivas del equipo</li>
+            <li>La sincronización SINGA → PostgreSQL permite que los sistemas IA y de análisis consulten datos frescos sin impactar el ERP de producción</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">Puerto 5678</span>
+        <span class="meta-tag">Docker Compose</span>
+        <span class="meta-tag">Self-hosted</span>
+        <span class="meta-tag">400+ integraciones</span>
+      </div>
+      <div class="inv-badge">Inversión: $2,000 – $5,000 USD</div>
+    </div>
+  </div>
+
+  <!-- CRM VENTAS -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(34,197,94,.15);">💼</div>
+      <div class="card-header-meta">
+        <h3>CRM Ventas — Gestión del Pipeline Comercial</h3>
+        <p class="tagline">Sistema CRM enfocado en la gestión del ciclo de ventas, seguimiento de prospectos, carga de datos históricos y análisis del pipeline comercial.</p>
+        <div class="tags">
+          <span class="tag tag-green">Python + Flask</span>
+          <span class="tag tag-green">SQLite</span>
+          <span class="tag tag-blue">HTML / CSS / JS</span>
+          <span class="complexity-pill cp-low">Complejidad Baja</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Funcionalidades principales</h4>
+          <ul>
+            <li>Gestión de prospectos y clientes potenciales</li>
+            <li>Seguimiento del estado del pipeline comercial</li>
+            <li>Carga masiva de datos históricos (load_data.py 11 KB)</li>
+            <li>Configuración flexible por tipo de negocio (config.py)</li>
+            <li>Punto de entrada centralizado (run.py 7 KB)</li>
+            <li>Reportes de actividad comercial por período</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Centraliza el seguimiento de oportunidades comerciales</li>
+            <li>Elimina hojas de cálculo dispersas del equipo de ventas</li>
+            <li>Historial de interacciones por cliente o prospecto</li>
+            <li>Métricas de conversión para mejorar la efectividad comercial</li>
+            <li>Base de datos propia de prospectos: activo comercial de la empresa</li>
+            <li>Fácilmente extensible para integrar con ERPs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">load_data.py 11 KB</span>
+        <span class="meta-tag">run.py 7 KB</span>
+        <span class="meta-tag">config.py</span>
+      </div>
+      <div class="inv-badge">Inversión: $3,500 – $7,000 USD</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARDS POWER BI -->
+  <div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+      <div class="proj-icon" style="background:rgba(245,158,11,.15);">📈</div>
+      <div class="card-header-meta">
+        <h3>Dashboards Power BI — Inteligencia de Negocio Visual</h3>
+        <p class="tagline">Suite de 21 dashboards ejecutivos .pbix que visualizan operaciones de almacén, compras, contratación, nómina, tickets, rotación de personal y resultados por estado.</p>
+        <div class="tags">
+          <span class="tag tag-amber">Power BI</span>
+          <span class="tag tag-blue">.pbix hasta 147 MB</span>
+          <span class="tag tag-green">Multi-estado</span>
+          <span class="tag tag-teal">Dirección ejecutiva</span>
+          <span class="complexity-pill cp-medium">Complejidad Media</span>
+        </div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-grid">
+        <div class="card-col">
+          <h4>Dashboards incluidos</h4>
+          <ul>
+            <li><strong>Almacén ver 2.0</strong> — control y movimientos de almacén</li>
+            <li><strong>Compras y Entregas</strong> — seguimiento de materiales</li>
+            <li><strong>Contratación Inteligente</strong> — métricas del proceso</li>
+            <li><strong>Dash_Vic</strong> — dashboard ejecutivo (111 MB)</li>
+            <li><strong>Dash_Engel</strong> — dashboard ejecutivo (nov 2025)</li>
+            <li><strong>Plantilla vs Empleados</strong> — análisis de plantilla (mar 2026)</li>
+            <li><strong>Tickets SQL</strong> — seguimiento de tickets (ene 2026)</li>
+            <li><strong>Nóminas SQL Recovery</strong> — nóminas por periodo</li>
+            <li><strong>Mantenimiento CQ</strong> — indicadores de calidad</li>
+            <li><strong>Supervisión Inteligente Unión</strong> — supervisiones en campo</li>
+            <li><strong>Rotación:</strong> SLP, Jalisco, NL · <strong>Vacantes Display</strong></li>
+            <li><strong>Dashboard_todos_estados</strong> — nacional consolidado (147 MB)</li>
+            <li><strong>+ 7 dashboards más</strong> — por estado y operativos</li>
+          </ul>
+        </div>
+        <div class="card-col">
+          <h4>Beneficios para la empresa</h4>
+          <ul>
+            <li>Dirección toma decisiones con datos visuales en tiempo real</li>
+            <li>Comparativa de desempeño entre estados y regiones</li>
+            <li>Métricas de contratación y entregas consolidadas</li>
+            <li>Reportes ejecutivos listos sin necesidad de IT</li>
+            <li>Complementan los sistemas de código con visualizaciones de alto impacto</li>
+            <li>Evidencia visual para presentaciones a clientes y socios</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-tags">
+        <span class="meta-tag">21 archivos .pbix</span>
+        <span class="meta-tag">Nóminas · Tickets · Rotación · Supervisión</span>
+        <span class="meta-tag">Nacional + por estado</span>
+      </div>
+      <div class="inv-badge">Inversión: $5,000 – $10,000 USD</div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- ─────────── PAGE: STACK -->
+<div class="page" id="page-stack">
+  <div class="page-header">
+    <div class="page-eyebrow">Arquitectura técnica</div>
+    <div class="page-title"><span>Stack tecnológico</span> del ecosistema</div>
+    <p class="page-desc">40+ tecnologías organizadas por capa. Cada una seleccionada por madurez, rendimiento y capacidad de escalar en producción.</p>
+  </div>
+
+  <div class="tech-group">
+    <div class="tech-group-title">Backend — Servidores y APIs</div>
+    <div class="tech-pills">
+      <div class="tech-pill">🐍 Python 3.11+ <span class="cnt">14 proyectos</span></div>
+      <div class="tech-pill">⚡ FastAPI <span class="cnt">8 proyectos</span></div>
+      <div class="tech-pill">🌶️ Flask <span class="cnt">5 proyectos</span></div>
+      <div class="tech-pill">🔷 SQLAlchemy 2.0 <span class="cnt">6 proyectos</span></div>
+      <div class="tech-pill">🔄 Alembic Migrations <span class="cnt">3 proyectos</span></div>
+      <div class="tech-pill">📊 pandas <span class="cnt">4 proyectos</span></div>
+      <div class="tech-pill">📈 openpyxl <span class="cnt">3 proyectos</span></div>
+    </div>
+  </div>
+
+  <div class="tech-group">
+    <div class="tech-group-title">Frontend — Interfaces y UI</div>
+    <div class="tech-pills">
+      <div class="tech-pill">⚛️ Next.js 16 + React 19</div>
+      <div class="tech-pill">📘 TypeScript 5</div>
+      <div class="tech-pill">🎨 Tailwind CSS v4</div>
+      <div class="tech-pill">🗺️ Leaflet + OpenStreetMap</div>
+      <div class="tech-pill">🌐 JavaScript ES2022+ <span class="cnt">10 proyectos</span></div>
+      <div class="tech-pill">🎬 Motion.js</div>
+      <div class="tech-pill">📡 Server-Sent Events (SSE)</div>
+    </div>
+  </div>
+
+  <div class="tech-group">
+    <div class="tech-group-title">Inteligencia Artificial y Machine Learning</div>
+    <div class="tech-pills">
+      <div class="tech-pill">🔥 PyTorch 2.1+ <span class="cnt">2 proyectos</span></div>
+      <div class="tech-pill">👁️ YOLO v8 / v11 <span class="cnt">5 modelos</span></div>
+      <div class="tech-pill">🧬 InsightFace ArcFace</div>
+      <div class="tech-pill">🏃 ONNX Runtime 1.20</div>
+      <div class="tech-pill">🖐️ MediaPipe 0.10</div>
+      <div class="tech-pill">📄 Google Document AI</div>
+      <div class="tech-pill">🤖 OpenAI API <span class="cnt">2 proyectos</span></div>
+      <div class="tech-pill">📈 scikit-learn 1.5</div>
+      <div class="tech-pill">🔬 OpenCV 4.10 contrib <span class="cnt">3 proyectos</span></div>
+      <div class="tech-pill">🎯 Ultralytics (YOLOv8)</div>
+      <div class="tech-pill">🖼️ Pillow 10+</div>
+    </div>
+  </div>
+
+  <div class="tech-group">
+    <div class="tech-group-title">Bases de Datos</div>
+    <div class="tech-pills">
+      <div class="tech-pill">🐘 PostgreSQL 16 <span class="cnt">10 proyectos</span></div>
+      <div class="tech-pill">🪙 SQL Server (SINGA) <span class="cnt">3 proyectos</span></div>
+      <div class="tech-pill">📦 SQLite <span class="cnt">5 proyectos</span></div>
+      <div class="tech-pill">🔗 pyodbc (MSSQL)</div>
+      <div class="tech-pill">🔗 psycopg2 / psycopg3</div>
+    </div>
+  </div>
+
+  <div class="tech-group">
+    <div class="tech-group-title">Seguridad y Autenticación</div>
+    <div class="tech-pills">
+      <div class="tech-pill">🔐 JWT (python-jose) <span class="cnt">8 proyectos</span></div>
+      <div class="tech-pill">🔑 bcrypt / passlib</div>
+      <div class="tech-pill">🛡️ RBAC (Roles)</div>
+      <div class="tech-pill">🔒 OAuth2</div>
+      <div class="tech-pill">📋 Auditoría inmutable</div>
+    </div>
+  </div>
+
+  <div class="tech-group">
+    <div class="tech-group-title">Cloud e Infraestructura</div>
+    <div class="tech-pills">
+      <div class="tech-pill">☁️ Google Cloud Run <span class="cnt">4 proyectos</span></div>
+      <div class="tech-pill">🗄️ Cloud SQL (PostgreSQL)</div>
+      <div class="tech-pill">📁 Google Cloud Storage</div>
+      <div class="tech-pill">📄 Google Document AI</div>
+      <div class="tech-pill">🐳 Docker / Docker Compose <span class="cnt">5+ proyectos</span></div>
+      <div class="tech-pill">🔄 n8n Workflows</div>
+      <div class="tech-pill">📊 Power BI <span class="cnt">21 dashboards</span></div>
+      <div class="tech-pill">💬 Twilio WhatsApp</div>
+      <div class="tech-pill">🌍 OSRM (rutas GPS)</div>
+      <div class="tech-pill">📡 Socrata Open Data API</div>
+      <div class="tech-pill">🏛️ SEC EDGAR API</div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-icon">✅</div>
+    <div class="callout-content">
+      <h4>Por qué este stack es una fortaleza</h4>
+      <ul>
+        <li><strong>FastAPI + PostgreSQL + Docker</strong> es la combinación más demandada del mercado: rápido, escalable y con el mayor ecosistema de talento disponible.</li>
+        <li><strong>Google Cloud Run</strong> escala de 0 a miles de usuarios automáticamente — sin servidores fijos que pagar cuando no se usan.</li>
+        <li><strong>InsightFace ArcFace + ONNX Runtime</strong> es el mismo stack que usa Meta para reconocimiento facial en producción. No es tecnología experimental.</li>
+        <li><strong>YOLO v11</strong> es el estado del arte en detección de objetos en tiempo real — el mismo que usan Tesla, Walmart y Amazon en sus operaciones.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: ARQUITECTURA -->
+<div class="page" id="page-arquitectura">
+  <div class="page-header">
+    <div class="page-eyebrow">Diseño del sistema</div>
+    <div class="page-title">Arquitectura <span>del ecosistema</span></div>
+    <p class="page-desc">Haz clic en cada capa para expandirla y explorar sus tecnologías, decisiones de diseño y el rol que juega dentro del ecosistema.</p>
+  </div>
+
+  <!-- stat bar -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px;">
+    <div class="kpi-card" style="--kpi-color:#3b82f6;"><div class="kpi-val">15</div><div class="kpi-label">Microservicios</div></div>
+    <div class="kpi-card" style="--kpi-color:#a855f7;"><div class="kpi-val">40+</div><div class="kpi-label">Tecnologías</div></div>
+    <div class="kpi-card" style="--kpi-color:#f59e0b;"><div class="kpi-val">6+</div><div class="kpi-label">Modelos ML</div></div>
+    <div class="kpi-card" style="--kpi-color:#06b6d4;"><div class="kpi-val">3</div><div class="kpi-label">Bases de datos</div></div>
+    <div class="kpi-card" style="--kpi-color:#22c55e;"><div class="kpi-val">GCP</div><div class="kpi-label">Cloud nativo</div></div>
+  </div>
+
+  <!-- controls -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+    <div style="font-size:12px;color:#4b5563;">↕ Haz clic en una capa para expandirla</div>
+    <div style="display:flex;gap:8px;">
+      <button class="arch-ctrl-btn" onclick="archExpandAll()">Expandir todo</button>
+      <button class="arch-ctrl-btn" onclick="archCollapseAll()">Colapsar todo</button>
+    </div>
+  </div>
+
+  <!-- ══════════ DIAGRAM WRAPPER ══════════ -->
+  <div id="arch-diagram-wrap" style="position:relative;overflow:hidden;background:linear-gradient(160deg,#080d18 0%,#0b1220 100%);border:1px solid rgba(59,130,246,.13);border-radius:20px;padding:20px 18px;margin-bottom:28px;">
+    <canvas id="archCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:.11;"></canvas>
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;gap:0;">
+
+      <!-- ══ LAYER 01: CLIENTES ══ -->
+      <div class="al" id="al-1" style="--lc:#3b82f6;--lbg:rgba(59,130,246,.06);--lbd:rgba(59,130,246,.22);">
+        <div class="al-head" onclick="alToggle('al-1')">
+          <div class="al-left">
+            <span class="al-num">01</span>
+            <span class="al-icon-wrap" style="background:rgba(59,130,246,.18);">🌐</span>
+            <div>
+              <div class="al-name">Capa de Clientes</div>
+              <div class="al-sub">Interfaces de acceso — Web · Móvil · Hardware · Mensajería</div>
+            </div>
+          </div>
+          <div class="al-right">
+            <span class="al-chip" style="background:rgba(59,130,246,.15);color:#60a5fa;border-color:rgba(59,130,246,.3);">6 interfaces</span>
+            <span class="al-chevron">▾</span>
+          </div>
+        </div>
+        <div class="al-body">
+          <div class="al-grid">
+            <div class="al-card" style="--cc:#3b82f6;"><div class="al-card-icon">🌐</div><div class="al-card-name">Web Browser</div><div class="al-card-desc">Chrome · Safari · Edge. Acceso principal para RRHH, dirección y operadores. UI React 19 con SSR.</div></div>
+            <div class="al-card" style="--cc:#3b82f6;"><div class="al-card-icon">📱</div><div class="al-card-name">Móvil / Tablet</div><div class="al-card-desc">UI completamente responsive. Supervisores en campo acceden a rutas GPS y reportes desde teléfono.</div></div>
+            <div class="al-card" style="--cc:#3b82f6;"><div class="al-card-icon">📷</div><div class="al-card-name">Terminal Biométrica</div><div class="al-card-desc">Hardware dedicado con cámara. Ejecuta ArcFace + ONNX en tiempo real para reconocimiento facial.</div></div>
+            <div class="al-card" style="--cc:#3b82f6;"><div class="al-card-icon">💬</div><div class="al-card-name">WhatsApp</div><div class="al-card-desc">Canal de encuestas de calidad vía Twilio. 98% de tasa de apertura vs 20% del email tradicional.</div></div>
+            <div class="al-card" style="--cc:#3b82f6;"><div class="al-card-icon">🖥️</div><div class="al-card-name">App Desktop</div><div class="al-card-desc">Tkinter · Windows. Análisis de material SINGA offline con caché local de 363 MB.</div></div>
+            <div class="al-card" style="--cc:#3b82f6;"><div class="al-card-icon">📊</div><div class="al-card-name">Power BI</div><div class="al-card-desc">21 dashboards .pbix. Plantilla, nómina, tickets, rotación, supervisión y operativos. Visión ejecutiva.</div></div>
+          </div>
+          <div class="al-proto-bar" style="--bc:#3b82f6;">HTTPS · REST · WebSocket · Twilio WhatsApp API</div>
+        </div>
+      </div>
+
+      <div class="al-connector"><div class="al-conn-line"><div class="al-conn-dot" style="background:#3b82f6;"></div></div><span class="al-conn-txt">HTTPS · REST API</span></div>
+
+      <!-- ══ LAYER 02: FRONTEND & GATEWAY ══ -->
+      <div class="al" id="al-2" style="--lc:#a855f7;--lbg:rgba(168,85,247,.06);--lbd:rgba(168,85,247,.22);">
+        <div class="al-head" onclick="alToggle('al-2')">
+          <div class="al-left">
+            <span class="al-num">02</span>
+            <span class="al-icon-wrap" style="background:rgba(168,85,247,.18);">⚛️</span>
+            <div>
+              <div class="al-name">Frontend &amp; Gateway</div>
+              <div class="al-sub">Presentación · Enrutamiento · Autenticación · Seguridad</div>
+            </div>
+          </div>
+          <div class="al-right">
+            <span class="al-chip" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">9 tecnologías</span>
+            <span class="al-chevron">▾</span>
+          </div>
+        </div>
+        <div class="al-body">
+          <div class="al-grid">
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">⚛️</div><div class="al-card-name">Next.js 16 + React 19</div><div class="al-card-desc">Plataforma UI principal. SSR + rutas dinámicas + SSE. TypeScript 5 + Tailwind CSS v4 + Motion.js.</div><span class="al-badge-pill" style="background:rgba(168,85,247,.15);color:#c084fc;">Frontend principal</span></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">🌶️</div><div class="al-card-name">Flask + Jinja2</div><div class="al-card-desc">5 proyectos con templates server-side. Simple y efectivo para psicométricas, encuestas y CRM.</div><span class="al-badge-pill" style="background:rgba(168,85,247,.15);color:#c084fc;">5 proyectos</span></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">🔐</div><div class="al-card-name">JWT + OAuth2</div><div class="al-card-desc">python-jose. Tokens firmados en 8 sistemas. Expiración automática y refresh tokens stateless.</div><span class="al-badge-pill" style="background:rgba(168,85,247,.15);color:#c084fc;">8 proyectos</span></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">🛡️</div><div class="al-card-name">RBAC</div><div class="al-card-desc">Control de acceso por roles: admin, operador, supervisor, auditor, dirección. Hasta 5 roles por sistema.</div></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">🗺️</div><div class="al-card-name">Leaflet + OSM</div><div class="al-card-desc">Mapas interactivos con OpenStreetMap. Rutas de supervisores calculadas en tiempo real con OSRM.</div></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">📡</div><div class="al-card-name">Server-Sent Events</div><div class="al-card-desc">Actualizaciones en tiempo real sin polling. Usado en dashboards de supervisión y status en vivo.</div></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">🔑</div><div class="al-card-name">bcrypt / passlib</div><div class="al-card-desc">Hash con sal en todos los sistemas. Sin almacenamiento de passwords en texto plano. PBKDF2 disponible.</div></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">📋</div><div class="al-card-name">Auditoría inmutable</div><div class="al-card-desc">JSON logging con timestamp, usuario y payload en cada acción. No editable retroactivamente. GDPR-ready.</div></div>
+            <div class="al-card" style="--cc:#a855f7;"><div class="al-card-icon">🔄</div><div class="al-card-name">Alembic Migrations</div><div class="al-card-desc">Control de versiones del esquema de base de datos. 3 proyectos con migraciones automáticas en CI.</div><span class="al-badge-pill" style="background:rgba(168,85,247,.15);color:#c084fc;">3 proyectos</span></div>
+          </div>
+          <div class="al-proto-bar" style="--bc:#a855f7;">SQLAlchemy 2.0 ORM · pandas · openpyxl · Business Logic</div>
+        </div>
+      </div>
+
+      <div class="al-connector"><div class="al-conn-line"><div class="al-conn-dot" style="background:#a855f7;"></div></div><span class="al-conn-txt">SQLAlchemy ORM · Lógica de negocio</span></div>
+
+      <!-- ══ LAYER 03: SERVICIOS CORE ══ -->
+      <div class="al" id="al-3" style="--lc:#22c55e;--lbg:rgba(34,197,94,.06);--lbd:rgba(34,197,94,.22);">
+        <div class="al-head" onclick="alToggle('al-3')">
+          <div class="al-left">
+            <span class="al-num">03</span>
+            <span class="al-icon-wrap" style="background:rgba(34,197,94,.18);">⚙️</span>
+            <div>
+              <div class="al-name">Servicios Core</div>
+              <div class="al-sub">15 microservicios independientes — FastAPI · Flask · Python 3.11+</div>
+            </div>
+          </div>
+          <div class="al-right">
+            <span class="al-chip" style="background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.3);">15 sistemas</span>
+            <span class="al-chevron">▾</span>
+          </div>
+        </div>
+        <div class="al-body">
+          <div class="al-grid al-grid-wide">
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🏢</div><div class="al-card-name">SUMCO ERP</div><div class="al-card-desc">ERP con 13 módulos: pedidos, compras, CRM Ventas (pipeline 9 etapas), RH/Nómina, inventario, rutas OSRM, fabricación y robots Pudu. Integración nativa SINGA bidireccional.</div><span class="al-badge-pill" style="background:rgba(244,63,94,.12);color:#fb7185;">Extrema</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🎯</div><div class="al-card-name">Reclut.ai</div><div class="al-card-desc">ATS SaaS con academia integrada, pagos Stripe/Conekta, multiempresa. Listo para licenciar.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.12);color:#fb923c;">Alta</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">👁️</div><div class="al-card-name">Supervisiones + YOLO</div><div class="al-card-desc">GPS en campo, rutas OSRM, detección uniforme/EPP con YOLO v8 en tiempo real.</div><span class="al-badge-pill" style="background:rgba(244,63,94,.12);color:#fb7185;">Extrema</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">💬</div><div class="al-card-name">Quejas + Chatbot IA</div><div class="al-card-desc">RAG sobre documentos internos con OpenAI. Chatbot contextual de primer nivel sin intervención humana.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.12);color:#fb923c;">Alta</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">📝</div><div class="al-card-name">Contratación Inteligente</div><div class="al-card-desc">OCR + biometría ArcFace + validación docs. Onboarding 100% digital. Sin papel.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.12);color:#fb923c;">Alta</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🧬</div><div class="al-card-name">Reconocimiento Facial</div><div class="al-card-desc">Terminal ArcFace + ONNX Runtime. Embeddings biométricos propios. Hardware + software empaquetado por sitio.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.12);color:#fb923c;">Alta</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">⭐</div><div class="al-card-name">Encuestas Calidad</div><div class="al-card-desc">WhatsApp vía Twilio + dashboard en tiempo real. NPS por cliente e inmueble.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.12);color:#fbbf24;">Media</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🧠</div><div class="al-card-name">Pruebas Psicométricas</div><div class="al-card-desc">Baterías online, scoring automático, historial completo de candidatos. Integrable con Reclut.ai.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.12);color:#fbbf24;">Media</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">📦</div><div class="al-card-name">Análisis Material SINGA</div><div class="al-card-desc">ETL desde SQL Server, Z-score para anomalías, caché 363 MB. Desktop app sin saturar SINGA.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.12);color:#fbbf24;">Media</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🛒</div><div class="al-card-name">Mexiusa CRM + Price Watch</div><div class="al-card-desc">CRM/ERP ligero + scraping de precios en Amazon y ML. Inteligencia competitiva propia.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.12);color:#fbbf24;">Media</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🧩</div><div class="al-card-name">Batia-BrainHub</div><div class="al-card-desc">Plataforma multi-tenant para 5+ empresas. Datos aislados por cuenta. Arquitectura escalable.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.12);color:#fbbf24;">Media</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🔄</div><div class="al-card-name">n8n Orquestador</div><div class="al-card-desc">400+ integraciones. Pegamento entre todos los sistemas. Incluye sincronizacion_BD.py: replica SINGA → PostgreSQL automáticamente. Auto-hosted en Docker.</div><span class="al-badge-pill" style="background:rgba(34,197,94,.12);color:#4ade80;">Baja</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">💼</div><div class="al-card-name">CRM Ventas</div><div class="al-card-desc">Pipeline comercial, seguimiento de prospectos, carga histórica masiva. Sin Excel dispersos.</div><span class="al-badge-pill" style="background:rgba(34,197,94,.12);color:#4ade80;">Baja</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">🖥️</div><div class="al-card-name">Plataforma UI Central</div><div class="al-card-desc">Hub Next.js que unifica acceso a todos los sistemas. SSO + navegación unificada.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.12);color:#fb923c;">Alta</span></div>
+            <div class="al-card" style="--cc:#22c55e;"><div class="al-card-icon">📈</div><div class="al-card-name">Dashboards Power BI</div><div class="al-card-desc">21 dashboards .pbix. Nóminas, tickets, rotación, supervisión, por estado y nacional. Dirección ejecutiva.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.12);color:#fbbf24;">Media</span></div>
+          </div>
+          <div class="al-proto-bar" style="--bc:#22c55e;">pyodbc · psycopg2/3 · SQLAlchemy · Stripe · BeautifulSoup · pytest</div>
+        </div>
+      </div>
+
+      <div class="al-connector"><div class="al-conn-line"><div class="al-conn-dot" style="background:#22c55e;"></div></div><span class="al-conn-txt">PyTorch · ONNX Runtime · OpenCV · Inference pipeline</span></div>
+
+      <!-- ══ LAYER 04: IA / ML ══ -->
+      <div class="al" id="al-4" style="--lc:#f59e0b;--lbg:rgba(245,158,11,.06);--lbd:rgba(245,158,11,.22);">
+        <div class="al-head" onclick="alToggle('al-4')">
+          <div class="al-left">
+            <span class="al-num">04</span>
+            <span class="al-icon-wrap" style="background:rgba(245,158,11,.18);">🤖</span>
+            <div>
+              <div class="al-name">Motor IA &amp; Machine Learning</div>
+              <div class="al-sub">6+ modelos entrenados con datos propios · Visión artificial · NLP</div>
+            </div>
+          </div>
+          <div class="al-right">
+            <span class="al-chip" style="background:rgba(245,158,11,.15);color:#fbbf24;border-color:rgba(245,158,11,.3);">11 librerías</span>
+            <span class="al-chevron">▾</span>
+          </div>
+        </div>
+        <div class="al-body">
+          <div class="al-grid">
+            <div class="al-card al-card-hero" style="--cc:#f59e0b;"><div class="al-card-icon">👁️</div><div class="al-card-name">YOLO v8 / v11</div><div class="al-card-desc">5 modelos entrenados con imágenes propias. Detecta uniformes, EPP y anomalías en campo. Estado del arte en detección en tiempo real — mismo stack que Tesla y Walmart.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;">5 modelos propios</span></div>
+            <div class="al-card al-card-hero" style="--cc:#f59e0b;"><div class="al-card-icon">🧬</div><div class="al-card-name">InsightFace ArcFace + ONNX</div><div class="al-card-desc">Embeddings biométricos propios de los empleados. ONNX Runtime 1.20 para inferencia sub-100ms. El mismo stack que Meta usa en producción.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;">Producción Meta</span></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">🔥</div><div class="al-card-name">PyTorch 2.1+</div><div class="al-card-desc">Entrenamiento de modelos. 2 proyectos con fine-tuning. GPU-accelerated cuando disponible.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;">2 proyectos</span></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">🔬</div><div class="al-card-name">OpenCV 4.10 contrib</div><div class="al-card-desc">Procesamiento de imágenes en 3 proyectos. Pre/post-processing para pipelines de visión artificial.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;">3 proyectos</span></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">🤖</div><div class="al-card-name">OpenAI API</div><div class="al-card-desc">RAG sobre documentos internos (Chatbot). Embeddings semánticos para búsqueda contextual.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;">2 proyectos</span></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">📄</div><div class="al-card-name">Google Document AI</div><div class="al-card-desc">OCR de documentos de identidad (INE, CURP, pasaportes). Extrae campos estructurados automáticamente.</div></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">📈</div><div class="al-card-name">scikit-learn 1.5</div><div class="al-card-desc">Z-score para detección de anomalías en consumo de materiales. Identifica desperdicios o fraudes automáticamente.</div></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">🖐️</div><div class="al-card-name">MediaPipe 0.10</div><div class="al-card-desc">Detección de gestos y landmarks faciales. Complementa ArcFace con análisis de vivacidad (liveness).</div></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">📊</div><div class="al-card-name">pandas 2.x</div><div class="al-card-desc">ETL completo desde SINGA. Agregaciones mensuales, comparativas periodo a periodo, exportación Excel.</div><span class="al-badge-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;">4 proyectos</span></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">🖼️</div><div class="al-card-name">Pillow 10+</div><div class="al-card-desc">Procesamiento y normalización de imágenes antes de pasar a los modelos YOLO y ArcFace.</div></div>
+            <div class="al-card" style="--cc:#f59e0b;"><div class="al-card-icon">🎯</div><div class="al-card-name">Ultralytics</div><div class="al-card-desc">Framework de alto nivel para entrenamiento y exportación de modelos YOLO. CLI de entrenamiento.</div></div>
+          </div>
+          <div class="al-proto-bar" style="--bc:#f59e0b;">SQL · pyodbc · psycopg3 · Cloud Storage · Embeddings vectoriales</div>
+        </div>
+      </div>
+
+      <div class="al-connector"><div class="al-conn-line"><div class="al-conn-dot" style="background:#f59e0b;"></div></div><span class="al-conn-txt">SQL · pyodbc · psycopg2/3 · ETL · pandas</span></div>
+
+      <!-- ══ LAYER 05: DATOS ══ -->
+      <div class="al" id="al-5" style="--lc:#06b6d4;--lbg:rgba(6,182,212,.06);--lbd:rgba(6,182,212,.22);">
+        <div class="al-head" onclick="alToggle('al-5')">
+          <div class="al-left">
+            <span class="al-num">05</span>
+            <span class="al-icon-wrap" style="background:rgba(6,182,212,.18);">🗄️</span>
+            <div>
+              <div class="al-name">Capa de Datos</div>
+              <div class="al-sub">Persistencia · Caché · Embeddings · Cloud Storage</div>
+            </div>
+          </div>
+          <div class="al-right">
+            <span class="al-chip" style="background:rgba(6,182,212,.15);color:#22d3ee;border-color:rgba(6,182,212,.3);">7 almacenes</span>
+            <span class="al-chevron">▾</span>
+          </div>
+        </div>
+        <div class="al-body">
+          <div class="al-grid">
+            <div class="al-card al-card-hero" style="--cc:#06b6d4;"><div class="al-card-icon">🪙</div><div class="al-card-name">SQL Server · SINGA<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#06b6d4;margin-left:8px;animation:dotPulse 2s infinite;vertical-align:middle;"></span></div><div class="al-card-desc">ERP corporativo. Fuente de verdad única para todos los sistemas. Integración bidireccional vía pyodbc. No reemplazable por ningún SaaS del mercado.</div><span class="al-badge-pill" style="background:rgba(6,182,212,.15);color:#22d3ee;">Fuente de verdad</span></div>
+            <div class="al-card" style="--cc:#06b6d4;"><div class="al-card-icon">🐘</div><div class="al-card-name">PostgreSQL 16</div><div class="al-card-desc">Base de datos principal de 10 proyectos. Cloud SQL gestionado en GCP. SQLAlchemy + Alembic migrations.</div><span class="al-badge-pill" style="background:rgba(6,182,212,.15);color:#22d3ee;">10 proyectos</span></div>
+            <div class="al-card" style="--cc:#06b6d4;"><div class="al-card-icon">📦</div><div class="al-card-name">SQLite</div><div class="al-card-desc">Base de datos embebida en 5 proyectos más simples. Sin servidor. Ideal para apps desktop y prototipos.</div><span class="al-badge-pill" style="background:rgba(6,182,212,.15);color:#22d3ee;">5 proyectos</span></div>
+            <div class="al-card" style="--cc:#06b6d4;"><div class="al-card-icon">💾</div><div class="al-card-name">Caché SINGA 363 MB</div><div class="al-card-desc">SQLite local con años de historial de materiales. Consultas rápidas sin saturar el servidor SINGA.</div><span class="al-badge-pill" style="background:rgba(6,182,212,.15);color:#22d3ee;">Activo único</span></div>
+            <div class="al-card" style="--cc:#06b6d4;"><div class="al-card-icon">🔢</div><div class="al-card-name">Embeddings ArcFace</div><div class="al-card-desc">Vectores biométricos de todos los empleados. Activo intangible 100% propio. Imposible de adquirir con cualquier SaaS.</div><span class="al-badge-pill" style="background:rgba(6,182,212,.15);color:#22d3ee;">Propiedad total</span></div>
+            <div class="al-card" style="--cc:#06b6d4;"><div class="al-card-icon">📁</div><div class="al-card-name">Google Cloud Storage</div><div class="al-card-desc">Almacenamiento de imágenes de supervisiones, modelos ML (.pt, .onnx) y documentos de contratación.</div></div>
+            <div class="al-card" style="--cc:#06b6d4;"><div class="al-card-icon">🗄️</div><div class="al-card-name">Cloud SQL</div><div class="al-card-desc">PostgreSQL gestionado en GCP. Backups automáticos, alta disponibilidad, sin administración manual.</div></div>
+          </div>
+          <div class="al-proto-bar" style="--bc:#06b6d4;">Docker · Cloud Run · n8n · CI/CD · Google Cloud Platform</div>
+        </div>
+      </div>
+
+      <div class="al-connector"><div class="al-conn-line"><div class="al-conn-dot" style="background:#06b6d4;"></div></div><span class="al-conn-txt">Docker · GCP · n8n · CI/CD</span></div>
+
+      <!-- ══ LAYER 06: INFRAESTRUCTURA ══ -->
+      <div class="al" id="al-6" style="--lc:#f97316;--lbg:rgba(249,115,22,.06);--lbd:rgba(249,115,22,.22);">
+        <div class="al-head" onclick="alToggle('al-6')">
+          <div class="al-left">
+            <span class="al-num">06</span>
+            <span class="al-icon-wrap" style="background:rgba(249,115,22,.18);">☁️</span>
+            <div>
+              <div class="al-name">Infraestructura &amp; Cloud</div>
+              <div class="al-sub">GCP · Docker · n8n · Testing · Seguridad en tránsito</div>
+            </div>
+          </div>
+          <div class="al-right">
+            <span class="al-chip" style="background:rgba(249,115,22,.15);color:#fb923c;border-color:rgba(249,115,22,.3);">8 componentes</span>
+            <span class="al-chevron">▾</span>
+          </div>
+        </div>
+        <div class="al-body">
+          <div class="al-grid">
+            <div class="al-card al-card-hero" style="--cc:#f97316;"><div class="al-card-icon">☁️</div><div class="al-card-name">Google Cloud Run</div><div class="al-card-desc">Scale-to-zero automático. 4 proyectos en producción. Sin servidores fijos. Paga solo lo que usas. Soporta 10x el volumen actual sin cambios estructurales.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.15);color:#fb923c;">4 proyectos</span></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">🐳</div><div class="al-card-name">Docker / Compose</div><div class="al-card-desc">Contenedores en 5+ proyectos. Sin dependencias de sistema operativo. Deployable en cualquier nube.</div><span class="al-badge-pill" style="background:rgba(249,115,22,.15);color:#fb923c;">5+ proyectos</span></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">🔄</div><div class="al-card-name">n8n Workflows</div><div class="al-card-desc">Orquestador low-code. Pegamento entre todos los sistemas. 400+ integraciones. Corre en Docker Compose propio.</div></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">🌍</div><div class="al-card-name">OSRM</div><div class="al-card-desc">Motor de rutas de código abierto. Calcula rutas óptimas para supervisores en campo en tiempo real.</div></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">🔬</div><div class="al-card-name">pytest</div><div class="al-card-desc">Testing automatizado en Mexiusa y otros proyectos. Garantiza estabilidad antes de cada deploy.</div></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">🔒</div><div class="al-card-name">HTTPS / TLS</div><div class="al-card-desc">Todas las comunicaciones cifradas. Certificados automáticos en Cloud Run. Sin HTTP en producción.</div></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">📡</div><div class="al-card-name">Socrata + SEC EDGAR APIs</div><div class="al-card-desc">APIs de datos abiertos para análisis financiero y de mercado. Integradas en módulos de inteligencia.</div></div>
+            <div class="al-card" style="--cc:#f97316;"><div class="al-card-icon">💬</div><div class="al-card-name">Twilio WhatsApp API</div><div class="al-card-desc">Mensajería programática para encuestas de calidad. Webhooks de respuesta automática.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end layers -->
+
+    <canvas id="archCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:.11;z-index:0;"></canvas>
+  </div><!-- end arch-diagram-wrap -->
+
+  <div class="callout blue">
+    <div class="callout-icon">🏗️</div>
+    <div class="callout-content">
+      <h4>Por qué esta arquitectura es difícil de replicar</h4>
+      <ul>
+        <li><strong>SINGA como fuente de verdad única:</strong> los 15 sistemas comparten datos en tiempo real. Ningún competidor con SaaS genérico puede replicar esta integración sin reconstruir años de historial.</li>
+        <li><strong>Modelos ML con datos propios:</strong> el YOLO conoce los uniformes de la empresa. El ArcFace conoce los rostros. No hay atajos para adquirir esos activos de datos.</li>
+        <li><strong>Stack moderno y homogéneo:</strong> Python + FastAPI + PostgreSQL + Docker en toda la capa de servicios reduce fricción y el costo de contratar talento especializado.</li>
+        <li><strong>Cloud-native desde el diseño:</strong> no es un monolito migrado — es un ecosistema pensado para escalar en Google Cloud Run desde el primer commit.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: INVERSIÓN -->
+<div class="page" id="page-inversion">
+  <div class="page-header">
+    <div class="page-eyebrow">Análisis financiero</div>
+    <div class="page-title">La <span>inversión</span> detrás del ecosistema</div>
+    <p class="page-desc">Estimación detallada del costo de construcción de cada sistema, calculada con tarifas reales del mercado mexicano e internacional. Tipo de cambio: $17.50 MXN/USD.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Proyecto</th>
+          <th>Horas Est.</th>
+          <th>Costo México</th>
+          <th>Costo Internacional</th>
+          <th>Complejidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="t-bold">SUMCO (ERP Full)</td><td class="t-mono">800–1,400 h</td><td class="t-green">$32,000–$60,000</td><td>$96,000–$168,000</td><td><span class="complexity-pill cp-extreme">Extrema</span></td></tr>
+        <tr><td class="t-bold">Supervisiones + YOLO</td><td class="t-mono">400–700 h</td><td class="t-green">$18,000–$35,000</td><td>$48,000–$84,000</td><td><span class="complexity-pill cp-extreme">Extrema</span></td></tr>
+        <tr><td class="t-bold">Quejas + Chatbot IA</td><td class="t-mono">400–700 h</td><td class="t-green">$16,000–$28,000</td><td>$48,000–$84,000</td><td><span class="complexity-pill cp-high">Alta</span></td></tr>
+        <tr><td class="t-bold">Contratación Inteligente</td><td class="t-mono">300–500 h</td><td class="t-green">$15,000–$25,000</td><td>$36,000–$60,000</td><td><span class="complexity-pill cp-high">Alta</span></td></tr>
+        <tr><td class="t-bold">Reclut.ai (SaaS)</td><td class="t-mono">400–700 h</td><td class="t-green">$16,000–$28,000</td><td>$48,000–$84,000</td><td><span class="complexity-pill cp-high">Alta</span></td></tr>
+        <tr><td class="t-bold">Reconocimiento Facial</td><td class="t-mono">250–450 h</td><td class="t-green">$12,500–$22,500</td><td>$30,000–$54,000</td><td><span class="complexity-pill cp-high">Alta</span></td></tr>
+        <tr><td class="t-bold">Plataforma UI</td><td class="t-mono">300–600 h</td><td class="t-green">$12,000–$24,000</td><td>$36,000–$72,000</td><td><span class="complexity-pill cp-high">Alta</span></td></tr>
+        <tr><td class="t-bold">Análisis Material SINGA</td><td class="t-mono">200–350 h</td><td class="t-green">$7,000–$12,250</td><td>$20,000–$35,000</td><td><span class="complexity-pill cp-medium">Media</span></td></tr>
+        <tr><td class="t-bold">Proyecto Mexiusa</td><td class="t-mono">300–500 h</td><td class="t-green">$12,000–$20,000</td><td>$30,000–$50,000</td><td><span class="complexity-pill cp-medium">Media</span></td></tr>
+        <tr><td class="t-bold">Batia-BrainHub</td><td class="t-mono">200–400 h</td><td class="t-green">$8,000–$16,000</td><td>$20,000–$40,000</td><td><span class="complexity-pill cp-medium">Media</span></td></tr>
+        <tr><td class="t-bold">Pruebas Psicométricas</td><td class="t-mono">150–300 h</td><td class="t-green">$5,250–$10,500</td><td>$15,000–$30,000</td><td><span class="complexity-pill cp-medium">Media</span></td></tr>
+        <tr><td class="t-bold">Encuestas Calidad</td><td class="t-mono">150–300 h</td><td class="t-green">$5,250–$10,500</td><td>$15,000–$30,000</td><td><span class="complexity-pill cp-medium">Media</span></td></tr>
+        <tr><td class="t-bold">n8n + Automatización</td><td class="t-mono">30–100 h</td><td class="t-green">$2,000–$5,000</td><td>$5,000–$12,000</td><td><span class="complexity-pill cp-low">Baja</span></td></tr>
+        <tr><td class="t-bold">CRM Ventas</td><td class="t-mono">50–150 h</td><td class="t-green">$3,500–$7,000</td><td>$8,000–$18,000</td><td><span class="complexity-pill cp-low">Baja</span></td></tr>
+        <tr><td class="t-bold">Dashboards Power BI</td><td class="t-mono">100–200 h</td><td class="t-green">$5,000–$10,000</td><td>$12,000–$25,000</td><td><span class="complexity-pill cp-medium">Media</span></td></tr>
+        <tr style="background:rgba(59,130,246,.06);">
+          <td class="t-bold" style="font-size:14px;color:#fff;">TOTALES</td>
+          <td class="t-mono" style="font-weight:700;color:#60a5fa;">4,380–7,750 h</td>
+          <td class="t-green" style="font-size:14px;">$173,000–$319,500</td>
+          <td style="font-weight:700;color:var(--text);">$497,000–$913,000</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="hero-box">
+    <div class="eyebrow">Inversión Total del Ecosistema</div>
+    <div class="big">$4.5M MXN</div>
+    <div class="sub">Punto medio estimado · ~$257,000 USD a tarifas de México</div>
+    <div class="hero-grid">
+      <div class="hero-item"><div class="hval">$3.1M – $5.6M MXN</div><div class="hlbl">A tarifas de México ($35–45 USD/hr)</div></div>
+      <div class="hero-item"><div class="hval">$8.7M – $16M MXN</div><div class="hlbl">A tarifas internacionales ($100–130 USD/hr)</div></div>
+      <div class="hero-item"><div class="hval">4,380 – 7,750 h</div><div class="hlbl">Horas totales de desarrollo</div></div>
+      <div class="hero-item"><div class="hval">6+ modelos ML</div><div class="hlbl">Entrenados con datos propios</div></div>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-content">
+      <h4>Nota sobre los proyectos con IA/ML</h4>
+      <p>Los proyectos de visión artificial (Supervisiones, Contratación Inteligente, Reconocimiento Facial) llevan una tarifa premium de $45–65 USD/hr por la especialización en ML Engineering y Computer Vision — perfiles significativamente más escasos y caros que un desarrollador web estándar. Las estimaciones presentadas son conservadoras para esos proyectos específicos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: MERCADO -->
+<div class="page" id="page-mercado">
+  <div class="page-header">
+    <div class="page-eyebrow">Comparativa de mercado</div>
+    <div class="page-title">Cuánto costaría <span>reemplazarlo</span> con SaaS</div>
+    <p class="page-desc">Comparativa directa entre los sistemas propios y sus equivalentes comerciales. Cada año que pasa sin software propio, este es el costo que se pagaría.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sistema Propio</th>
+          <th>Equivalente Comercial</th>
+          <th>Costo Anual (USD)</th>
+          <th>En MXN / año</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="t-bold">SUMCO(ERP)</td><td>SAP Business One / Odoo Enterprise</td><td class="t-red">$24,000–$60,000</td><td class="t-red">$420K–$1.05M</td></tr>
+        <tr><td class="t-bold">Chatbot IA + RAG</td><td>Intercom + AI Business Plan</td><td class="t-red">$6,000–$18,000</td><td class="t-red">$105K–$315K</td></tr>
+        <tr><td class="t-bold">Contratación Inteligente</td><td>WorkBright + Checkr + OCR API</td><td class="t-red">$8,000–$20,000</td><td class="t-red">$140K–$350K</td></tr>
+        <tr><td class="t-bold">Reconocimiento Facial</td><td>ZKTeco / Suprema (por sitio)</td><td class="t-red">$3,000–$8,000 /sitio</td><td class="t-red">$52K–$140K /sitio</td></tr>
+        <tr><td class="t-bold">Reclut.ai (ATS)</td><td>Workable / BambooHR</td><td class="t-red">$4,800–$12,000</td><td class="t-red">$84K–$210K</td></tr>
+        <tr><td class="t-bold">Plataforma UI</td><td>Monday.com Enterprise + Jira</td><td class="t-red">$3,600–$9,600</td><td class="t-red">$63K–$168K</td></tr>
+        <tr><td class="t-bold">Encuestas Calidad</td><td>SurveyMonkey Business + Twilio</td><td class="t-red">$2,400–$6,000</td><td class="t-red">$42K–$105K</td></tr>
+        <tr><td class="t-bold">Pruebas Psicométricas</td><td>Psycruit / TalentQuest</td><td class="t-red">$3,000–$8,000</td><td class="t-red">$52K–$140K</td></tr>
+        <tr><td class="t-bold">Análisis Material + BI</td><td>Tableau + ETL Fivetran</td><td class="t-red">$4,800–$12,000</td><td class="t-red">$84K–$210K</td></tr>
+        <tr><td class="t-bold">Supervisiones</td><td>Fieldwire / ServiceMax</td><td class="t-red">$6,000–$18,000</td><td class="t-red">$105K–$315K</td></tr>
+        <tr><td class="t-bold">n8n (Automatización)</td><td>Zapier Business / Make Teams</td><td class="t-red">$2,400–$6,000</td><td class="t-red">$42K–$105K</td></tr>
+        <tr style="background:rgba(244,63,94,.06);">
+          <td class="t-bold" style="font-size:14px;color:#fff;">TOTAL AHORRO ANUAL</td>
+          <td style="color:var(--text-sub);font-size:12px;">Todos los sistemas combinados</td>
+          <td class="t-red" style="font-size:14px;">$68,000–$177,600</td>
+          <td class="t-red" style="font-size:14px;">$1.19M–$3.11M</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout rose">
+    <div class="callout-icon">🔒</div>
+    <div class="callout-content">
+      <h4>Lo que ningún SaaS del mercado puede ofrecer</h4>
+      <ul>
+        <li><strong>Integración con SINGA:</strong> Ningún SAP, Odoo ni HubSpot se conecta nativamente a tu SQL Server. Eso requeriría $30,000–$80,000 USD adicionales solo en integración.</li>
+        <li><strong>Modelos YOLO propios:</strong> Entrenados con imágenes de tus uniformes, tus instalaciones, tus operaciones. Ningún proveedor tiene eso — tendría que re-entrenarse desde cero.</li>
+        <li><strong>Embeddings biométricos:</strong> Los vectores ArcFace de tus empleados son activos de la empresa. Con cualquier SaaS biométrico, esos datos quedan en servidores de terceros.</li>
+        <li><strong>Datos históricos de SINGA:</strong> El caché de 363 MB con años de historial de materiales es un activo que tomó tiempo acumular y no se puede "comprar" a ningún proveedor.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: ROI -->
+<div class="page" id="page-roi">
+  <div class="page-header">
+    <div class="page-eyebrow">Retorno de inversión</div>
+    <div class="page-title">El ecosistema se paga solo <span>en 18 meses</span></div>
+    <p class="page-desc">Proyección financiera a 5 años comparando el costo del desarrollo propio versus contratar soluciones SaaS equivalentes en el mercado.</p>
+  </div>
+
+  <div class="tbl-wrap" style="margin-bottom:28px;">
+    <table>
+      <thead>
+        <tr><th>Escenario</th><th>Año 1</th><th>Año 2</th><th>Año 3</th><th>Año 4</th><th>Año 5</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="t-bold" style="color:#fb7185;">Costo acumulado (SaaS)</td>
+          <td class="t-red">$150,000</td><td class="t-red">$315,000</td><td class="t-red">$496,000</td><td class="t-red">$695,000</td><td class="t-red">$915,000</td>
+        </tr>
+        <tr>
+          <td class="t-bold" style="color:#4ade80;">Costo desarrollo propio *</td>
+          <td class="t-green">$270,000</td><td class="t-green">$283,000</td><td class="t-green">$297,000</td><td class="t-green">$312,000</td><td class="t-green">$328,000</td>
+        </tr>
+        <tr style="background:rgba(34,197,94,.05);">
+          <td class="t-bold" style="font-size:14px;color:#fff;">Ahorro neto acumulado</td>
+          <td style="color:#fb7185;font-weight:700;">-$120,000</td>
+          <td style="color:#fb7185;font-weight:700;">+$32,000</td>
+          <td class="t-green" style="font-size:13px;">+$199,000</td>
+          <td class="t-green" style="font-size:13px;">+$383,000</td>
+          <td class="t-green" style="font-size:14px;font-weight:800;">+$587,000</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding:10px 16px;font-size:11px;color:var(--text-dim);">* Incluye mantenimiento anual estimado en 5% del costo total. SaaS con incremento anual del 10%.</div>
+  </div>
+
+  <div class="section-title">Línea de tiempo del retorno</div>
+
+  <div class="timeline" style="margin-bottom:32px;">
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot" style="color:#fb7185;border-color:rgba(244,63,94,.4);">0</div></div>
+      <div class="tl-content">
+        <h4>Mes 0 — Inversión inicial</h4>
+        <p>Desarrollo completado. Inversión de ~$257,000 USD (~$4.5M MXN). Los 15 sistemas entran en producción. Los ahorros comienzan a acumularse desde el primer día de operación.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot" style="color:#f59e0b;border-color:rgba(245,158,11,.4);">6</div></div>
+      <div class="tl-content">
+        <h4>Mes 6 — Primeros ahorros consolidados</h4>
+        <p>Se han dejado de pagar ~$75,000 USD en licencias SaaS. El equipo domina los sistemas. Los procesos de contratación y supervisión ya están digitalizados al 100%.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot" style="color:#fbbf24;border-color:rgba(251,191,36,.4);">12</div></div>
+      <div class="tl-content">
+        <h4>Mes 12 — Primer aniversario operativo</h4>
+        <p>Ahorro acumulado: ~$150,000 USD. El ecosistema ha procesado miles de contrataciones, supervisiones y pedidos. Los datos acumulados empiezan a alimentar modelos ML más precisos.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot" style="color:#4ade80;border-color:rgba(74,222,128,.4);">18</div></div>
+      <div class="tl-content">
+        <h4>Mes 18–20 — Break-even ✓</h4>
+        <p>La inversión está recuperada. A partir de este punto, cada mes representa <strong style="color:#4ade80;">$12,000–$15,000 USD de ahorro neto</strong> versus la alternativa SaaS. El ecosistema ahora genera valor puro.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot" style="color:#60a5fa;border-color:rgba(96,165,250,.4);">60</div></div>
+      <div class="tl-content">
+        <h4>Mes 60 (Año 5) — Ahorro total acumulado</h4>
+        <p>Ahorro neto acumulado: <strong style="color:#4ade80;">+$587,000 USD (~$10.3M MXN)</strong>. Sin contar ingresos por licenciamiento de productos a terceros, que pueden multiplicar esta cifra.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-icon">📈</div>
+    <div class="callout-content">
+      <h4>El cálculo que no está en la tabla</h4>
+      <ul>
+        <li>Cada contratación procesada por el sistema en lugar de manualmente ahorra ~3 horas de trabajo RRHH = $75–$150 pesos ahorrados por candidato.</li>
+        <li>Cada supervisión automatizada con detección de uniformes ahorra ~45 min de trabajo administrativo = datos que se acumulan en miles de visitas al año.</li>
+        <li>Cada ruta GPS optimizada ahorra combustible y tiempo de traslado — con cientos de visitas al mes, el ahorro es significativo.</li>
+        <li>La detección temprana de anomalías en consumo de materiales puede evitar desperdicios por decenas de miles de pesos al año.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: ESTRATÉGICO -->
+<div class="page" id="page-estrategico">
+  <div class="page-header">
+    <div class="page-eyebrow">Visión estratégica</div>
+    <div class="page-title">Valor que <span>no aparece</span> en ninguna factura</div>
+    <p class="page-desc">Más allá del ahorro operativo, el ecosistema genera ventajas competitivas únicas, activos intangibles propios y oportunidades de monetización a terceros.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+    <div class="callout green">
+      <div class="callout-icon">🏆</div>
+      <div class="callout-content">
+        <h4>1. Propiedad total de datos y modelos</h4>
+        <p>Los embeddings biométricos, el historial de SINGA, los modelos YOLO entrenados con imágenes propias y la caché de 363 MB son activos que pertenecen 100% a la Unidad de Inteligencia. Ningún proveedor puede retenerlos.</p>
+      </div>
+    </div>
+    <div class="callout blue">
+      <div class="callout-icon">🔗</div>
+      <div class="callout-content">
+        <h4>2. Integración nativa con SINGA</h4>
+        <p>Todos los sistemas leen y escriben en SQL Server (SINGA) en tiempo real. Esta integración es una barrera de entrada que ningún competidor puede replicar fácilmente con software genérico.</p>
+      </div>
+    </div>
+    <div class="callout amber">
+      <div class="callout-icon">💰</div>
+      <div class="callout-content">
+        <h4>3. Ventaja en licitaciones y contratos</h4>
+        <p>Demostrar tecnología propia — IA, biometría, trazabilidad, visión artificial — diferencia a la empresa de competidores que usan Excel y papel. Puede ser el factor decisivo en contratos de alto valor con grandes corporativos.</p>
+      </div>
+    </div>
+    <div class="callout rose">
+      <div class="callout-icon">🚀</div>
+      <div class="callout-content">
+        <h4>4. Escalabilidad sin costo marginal</h4>
+        <p>Google Cloud Run escala automáticamente. Duplicar operaciones no duplica costos de infraestructura. El ecosistema puede soportar 10x el volumen actual sin cambios estructurales.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Productos listos para licenciar a terceros</div>
+
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="ptitle">🎯 Reclut.ai</div>
+      <div class="pdesc">Plataforma SaaS de reclutamiento con academia integrada. Pagos listos con Stripe/Conekta.</div>
+      <div class="pmarket">Precio por cliente / mes</div>
+      <div class="pprice">$500–$2,000 USD</div>
+      <div class="pprice-sub">Con 10 clientes: $60,000–$240,000 USD/año</div>
+    </div>
+    <div class="product-card">
+      <div class="ptitle">📋 Contratación Inteligente</div>
+      <div class="pdesc">OCR + YOLO + validación biométrica para onboarding digital. Ideal para maquiladoras y despachos de RRHH.</div>
+      <div class="pmarket">Precio por cliente / mes</div>
+      <div class="pprice">$1,000–$3,000 USD</div>
+      <div class="pprice-sub">Con 10 clientes: $120,000–$360,000 USD/año</div>
+    </div>
+    <div class="product-card">
+      <div class="ptitle">👁️ Reconocimiento Facial</div>
+      <div class="pdesc">Terminal biométrica ArcFace lista para instalar. Hardware + software empaquetado por sitio.</div>
+      <div class="pmarket">Precio por instalación</div>
+      <div class="pprice">$2,000–$5,000 USD</div>
+      <div class="pprice-sub">Con 10 instalaciones: $20,000–$50,000 USD/año</div>
+    </div>
+    <div class="product-card">
+      <div class="ptitle">🔍 Supervisiones + YOLO</div>
+      <div class="pdesc">Detección automática de uniformes y EPP en campo. Adaptable a cualquier empresa de servicios.</div>
+      <div class="pmarket">Precio por cliente / mes</div>
+      <div class="pprice">$800–$2,500 USD</div>
+      <div class="pprice-sub">Con 10 clientes: $96,000–$300,000 USD/año</div>
+    </div>
+  </div>
+
+  <div class="hero-box" style="margin-top:28px;">
+    <div class="eyebrow">Potencial de Ingresos por Licenciamiento</div>
+    <div class="big">$5.2M – $16.6M MXN</div>
+    <div class="sub">Ingresos adicionales anuales con solo 10 clientes por producto</div>
+    <div class="hero-grid">
+      <div class="hero-item"><div class="hval">$4.5M MXN</div><div class="hlbl">Inversión realizada</div></div>
+      <div class="hero-item"><div class="hval">$1.7M–$4.5M MXN</div><div class="hlbl">Ahorro operativo anual</div></div>
+      <div class="hero-item"><div class="hval">18 meses</div><div class="hlbl">Break-even estimado</div></div>
+      <div class="hero-item"><div class="hval">$15M MXN</div><div class="hlbl">Valor de reposición internacional</div></div>
+    </div>
+  </div>
+
+  <div class="callout blue" style="margin-top:24px;">
+    <div class="callout-icon">🎯</div>
+    <div class="callout-content">
+      <h4>Conclusión ejecutiva en 4 puntos</h4>
+      <ul>
+        <li><strong>La inversión ya está hecha:</strong> $4.5M MXN en desarrollo a tarifas de México, con un valor de reposición de $15M MXN a tarifas internacionales.</li>
+        <li><strong>Se paga solo:</strong> El ahorro anual de $1.7M–$4.5M MXN en licencias no pagadas lo deja en cero en 18–20 meses.</li>
+        <li><strong>Es un activo, no un gasto:</strong> Los modelos ML, embeddings biométricos e integración con SINGA son activos únicos que aumentan de valor con el tiempo y el uso.</li>
+        <li><strong>Tiene potencial de ingresos propio:</strong> Los cuatro productos licenciables pueden generar $5.2M–$16.6M MXN adicionales al año, convirtiendo a la Unidad de Inteligencia en un centro de utilidades, no solo de costos.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────── PAGE: CIBERSEGURIDAD -->
+<div class="page" id="page-ciberseguridad">
+  <div class="page-header">
+    <div class="page-eyebrow">Seguridad del ecosistema</div>
+    <div class="page-title">Ciberseguridad <span>implementada</span></div>
+    <p class="page-desc">Inventario de los controles de seguridad activos en los 15 sistemas. Organizados por dominio: identidad, datos, red, infraestructura y cumplimiento.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row" style="margin-bottom:32px;">
+    <div class="kpi-card" style="--kpi-color:#22c55e;"><div class="kpi-val">8</div><div class="kpi-label">Sistemas con JWT</div></div>
+    <div class="kpi-card" style="--kpi-color:#3b82f6;"><div class="kpi-val">100%</div><div class="kpi-label">HTTPS en producción</div></div>
+    <div class="kpi-card" style="--kpi-color:#a855f7;"><div class="kpi-val">5</div><div class="kpi-label">Niveles de acceso RBAC</div></div>
+    <div class="kpi-card" style="--kpi-color:#f59e0b;"><div class="kpi-val">0</div><div class="kpi-label">Passwords en texto plano</div></div>
+    <div class="kpi-card" style="--kpi-color:#06b6d4;"><div class="kpi-val">Local</div><div class="kpi-label">Datos biométricos propios</div></div>
+  </div>
+
+  <!-- DOMINIO 1: IDENTIDAD Y ACCESO -->
+  <div class="section-title">🔐 Identidad y Control de Acceso (IAM)</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px;">
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(59,130,246,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔑</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">JWT + OAuth2</div>
+            <div style="font-size:10px;color:#3b82f6;font-weight:600;letter-spacing:.5px;">8 SISTEMAS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Tokens firmados con python-jose. Expiración automática configurable por sistema. Refresh tokens stateless — el servidor no almacena sesión. Sin cookies persistentes vulnerables a CSRF.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(168,85,247,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🛡️</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">RBAC — Roles granulares</div>
+            <div style="font-size:10px;color:#a855f7;font-weight:600;letter-spacing:.5px;">TODO EL ECOSISTEMA</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Hasta 5 roles por sistema: admin, operador, supervisor, auditor, dirección. Cada endpoint valida el rol antes de ejecutar. Acceso de mínimo privilegio por defecto.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(34,197,94,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔒</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">bcrypt / passlib</div>
+            <div style="font-size:10px;color:#22c55e;font-weight:600;letter-spacing:.5px;">TODOS LOS SISTEMAS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Hash de contraseñas con sal (salt) único por usuario. Factor de costo ajustable. Ningún sistema almacena passwords en texto plano o con hash reversible (MD5/SHA1).</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(245,158,11,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🧬</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Biometría ArcFace</div>
+            <div style="font-size:10px;color:#f59e0b;font-weight:600;letter-spacing:.5px;">CONTRATACIÓN · FACIAL</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Autenticación por reconocimiento facial para procesos de contratación y acceso físico. Los embeddings vectoriales se almacenan en infraestructura propia — nunca en servidores de terceros.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DOMINIO 2: INTEGRIDAD Y TRAZABILIDAD -->
+  <div class="section-title">📋 Integridad, Trazabilidad y Auditoría</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px;">
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(6,182,212,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">📋</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Auditoría inmutable JSON</div>
+            <div style="font-size:10px;color:#06b6d4;font-weight:600;letter-spacing:.5px;">FASTAPI + FLASK APPS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Cada acción se registra con timestamp UTC, ID de usuario, IP de origen y payload completo. El log no es editable retroactivamente — garantiza no repudio. Base para auditorías de cumplimiento.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(34,197,94,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔄</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Alembic Migrations</div>
+            <div style="font-size:10px;color:#22c55e;font-weight:600;letter-spacing:.5px;">3 PROYECTOS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Control de versiones del esquema de base de datos. Cada cambio estructural queda registrado y es reversible. Previene migraciones manuales que corrompan datos en producción.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(249,115,22,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔬</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">pytest — Testing automatizado</div>
+            <div style="font-size:10px;color:#f97316;font-weight:600;letter-spacing:.5px;">MEXIUSA + PROYECTOS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Suite de pruebas automatizadas que validan comportamiento esperado antes de cada deploy. Detecta regresiones y cambios que rompen lógica de negocio antes de llegar a producción.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DOMINIO 3: RED Y CIFRADO -->
+  <div class="section-title">🌐 Red, Cifrado y Comunicaciones</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px;">
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(59,130,246,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔐</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">HTTPS / TLS en producción</div>
+            <div style="font-size:10px;color:#3b82f6;font-weight:600;letter-spacing:.5px;">100% DE LOS SERVICIOS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Google Cloud Run fuerza HTTPS automáticamente con certificados gestionados. Sin HTTP disponible en producción. Datos en tránsito siempre cifrados — incluyendo embeddings biométricos y tokens JWT.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(20,184,166,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🐳</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Aislamiento por contenedor</div>
+            <div style="font-size:10px;color:#14b8a6;font-weight:600;letter-spacing:.5px;">DOCKER · 5+ PROYECTOS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Cada servicio corre en su propio contenedor Docker con filesystem y red aislados. Un compromiso en un contenedor no escala lateralmente al resto del ecosistema. Variables de entorno para secretos — sin hardcoding.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(168,85,247,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔌</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">SINGA aislado de internet</div>
+            <div style="font-size:10px;color:#a855f7;font-weight:600;letter-spacing:.5px;">SQL SERVER CORPORATIVO</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">El servidor SINGA no está expuesto a internet. Los sistemas acceden vía pyodbc en red interna. El script sincronizacion_BD.py replica a PostgreSQL para análisis — preservando SINGA sin acceso externo directo.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DOMINIO 4: DATOS SENSIBLES -->
+  <div class="section-title">🗄️ Protección de Datos Sensibles</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px;">
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(245,158,11,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔢</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Embeddings biométricos propios</div>
+            <div style="font-size:10px;color:#f59e0b;font-weight:600;letter-spacing:.5px;">ARCFACE · LOCAL</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Los vectores biométricos de empleados se almacenan en infraestructura propia, no en servidores de terceros. Con cualquier SaaS biométrico esos datos estarían en manos del proveedor y sujetos a sus brechas.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(6,182,212,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">💾</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Caché SINGA local (363 MB)</div>
+            <div style="font-size:10px;color:#06b6d4;font-weight:600;letter-spacing:.5px;">SQLITE · SIN EXPOSICIÓN</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">El historial de materiales replicado en SQLite local permite análisis pesados sin exponer SINGA. Los datos históricos sensibles de clientes y consumos no se envían a ningún servicio externo.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(34,197,94,.25);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:22px;">🔑</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;">Variables de entorno (.env)</div>
+            <div style="font-size:10px;color:#22c55e;font-weight:600;letter-spacing:.5px;">TODOS LOS PROYECTOS</div>
+          </div>
+          <span class="complexity-pill cp-low" style="margin-left:auto;">Activo</span>
+        </div>
+        <p style="font-size:12.5px;color:#6b7280;line-height:1.6;">Credenciales, API keys y connection strings en variables de entorno — nunca hardcodeadas en el código fuente. Los archivos .env están en .gitignore. En GCP se usan Secret Manager o variables de Cloud Run.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GAPS / ÁREAS DE MEJORA -->
+  <div class="section-title">🚧 Áreas de mejora recomendadas</div>
+  <div class="callout amber" style="margin-bottom:16px;">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-content">
+      <h4>No documentado / no confirmado — prioridad para 2026</h4>
+      <ul>
+        <li><strong>Rate limiting:</strong> No hay evidencia de límites de peticiones por IP o usuario en las APIs FastAPI/Flask. Recomendado: slowapi o middleware de Nginx.</li>
+        <li><strong>Cifrado en reposo:</strong> PostgreSQL y SQLite no tienen cifrado a nivel de disco documentado. Cloud SQL en GCP sí cifra en reposo por defecto — confirmar en instancias self-hosted.</li>
+        <li><strong>Rotación de credenciales:</strong> No hay política documentada de rotación periódica de JWT secrets, API keys de OpenAI/Twilio ni contraseñas de bases de datos.</li>
+        <li><strong>Escaneo de dependencias:</strong> No se documenta uso de herramientas como pip-audit, Safety o Dependabot para detectar vulnerabilidades en librerías de terceros.</li>
+        <li><strong>WAF / DDoS:</strong> Cloud Run tiene protección básica de Google, pero no hay WAF (Web Application Firewall) explícito para las apps Flask/FastAPI expuestas.</li>
+        <li><strong>Penetration testing:</strong> No documentado. Recomendado al menos una vez al año para SUMCO ERP y Reclut.ai antes de abrir a clientes externos.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-icon">✅</div>
+    <div class="callout-content">
+      <h4>Postura de seguridad general: Sólida para uso interno, en maduración para exposición externa</h4>
+      <ul>
+        <li>Los controles de <strong>identidad y acceso</strong> son completos y bien implementados para un ecosistema de esta escala — JWT + RBAC + bcrypt es el estándar de la industria.</li>
+        <li>La <strong>soberanía de datos</strong> es un activo real: biometría, historial SINGA y modelos ML nunca salen de la infraestructura propia.</li>
+        <li>El <strong>aislamiento en contenedores</strong> y la arquitectura cloud-native reducen significativamente la superficie de ataque lateral.</li>
+        <li>Para escalar a clientes externos (Reclut.ai, Contratación Inteligente), implementar rate limiting + escaneo de dependencias es el siguiente paso prioritario.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── PAGE: PLANES 2026 -->
+<div class="page" id="page-planes">
+  <div class="page-header">
+    <div class="page-eyebrow">Roadmap &amp; Estado real</div>
+    <div class="page-title">Planes de <span>Desarrollo 2026</span></div>
+    <p class="page-desc">Estado verificado en carpetas al 14 de abril de 2026. Proyectos en producción, sistemas en desarrollo activo hoy mismo, y el roadmap por trimestre.</p>
+  </div>
+
+  <!-- KPIs de estado -->
+  <div class="kpi-row" style="margin-bottom:32px;">
+    <div class="kpi-card" style="--kpi-color:#22c55e;"><div class="kpi-val">9</div><div class="kpi-label">En producción</div></div>
+    <div class="kpi-card" style="--kpi-color:#3b82f6;"><div class="kpi-val">4</div><div class="kpi-label">En desarrollo activo</div></div>
+    <div class="kpi-card" style="--kpi-color:#f59e0b;"><div class="kpi-val">21</div><div class="kpi-label">Dashboards Power BI</div></div>
+    <div class="kpi-card" style="--kpi-color:#14b8a6;"><div class="kpi-val">2</div><div class="kpi-label">Activos hoy mismo</div></div>
+  </div>
+
+  <!-- Callout de actividad hoy -->
+  <div class="callout green" style="margin-bottom:28px;">
+    <div class="callout-icon">🔴</div>
+    <div class="callout-content">
+      <h4>Actividad en tiempo real — 14 de abril de 2026</h4>
+      <ul>
+        <li><strong>Pruebas Psicométricas</strong> generando PDFs de candidatos en este momento (test Zavic, MMPI y otros).</li>
+        <li><strong>Contratación Inteligente</strong> con cambios en <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;font-size:11px;">script.js</code> aplicados hoy.</li>
+        <li><strong>SUMCO ERP</strong> con commits en <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;font-size:11px;">Sidebar.tsx</code> y <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;font-size:11px;">singa.py</code> ayer (13 abril).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tabla de estado -->
+  <div class="section-title">Estado real — todos los proyectos</div>
+  <div class="tbl-wrap" style="margin-bottom:36px;">
+    <table>
+      <thead>
+        <tr><th>Proyecto</th><th>Estado</th><th>Última actividad</th><th>Notas</th><th>Prioridad</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="t-bold">SUMCO ERP</td>
+          <td><span class="complexity-pill" style="background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">🔵 Desarrollo activo</span></td>
+          <td class="t-mono">13 abr 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">Sidebar.tsx + singa.py · 13 módulos</td>
+          <td><span class="complexity-pill cp-extreme">Crítica</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Contratación Inteligente</td>
+          <td><span class="complexity-pill" style="background:rgba(20,184,166,.15);color:#2dd4bf;border:1px solid rgba(20,184,166,.3);">🔴 Activo HOY</span></td>
+          <td class="t-mono">14 abr 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">script.js modificado hoy</td>
+          <td><span class="complexity-pill cp-extreme">Crítica</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Pruebas Psicométricas</td>
+          <td><span class="complexity-pill" style="background:rgba(20,184,166,.15);color:#2dd4bf;border:1px solid rgba(20,184,166,.3);">🔴 En uso HOY</span></td>
+          <td class="t-mono">14 abr 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">PDFs de candidatos generándose ahora</td>
+          <td><span class="complexity-pill cp-high">Alta</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Reclut.ai</td>
+          <td><span class="complexity-pill" style="background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">🔵 Desarrollo activo</span></td>
+          <td class="t-mono">1 abr 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">Git sincronizado</td>
+          <td><span class="complexity-pill cp-high">Alta</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Plataforma UI</td>
+          <td><span class="complexity-pill" style="background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">🔵 Desarrollo activo</span></td>
+          <td class="t-mono">14 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">UI central del ecosistema</td>
+          <td><span class="complexity-pill cp-high">Alta</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Batia-BrainHub</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">26 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">Multi-tenant activo</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">CRM Ventas</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">23 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">Pipeline comercial activo</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Reconocimiento Facial</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">7 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">ArcFace en terminales</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Quejas CRM + Chatbot</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">4 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">RAG + OpenAI activo</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Supervisiones + YOLO</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">4 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">GPS + detección uniforme</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Proyecto Calidad (encuestas)</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">12 feb 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">WhatsApp automático</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">n8n + sincronizacion_BD.py</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">20 feb 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">Sync SINGA → PostgreSQL activo</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Mexiusa CRM</td>
+          <td><span class="complexity-pill" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3);">🟡 Mantenimiento</span></td>
+          <td class="t-mono">12 feb 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">Price Watch operativo</td>
+          <td><span class="complexity-pill cp-low">Baja</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Análisis Material SINGA</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">19 dic 2025</td>
+          <td style="color:var(--text-sub);font-size:12px;">Desktop app con caché 363 MB</td>
+          <td><span class="complexity-pill cp-low">Baja</span></td>
+        </tr>
+        <tr>
+          <td class="t-bold">Power BI Dashboards</td>
+          <td><span class="complexity-pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);">🟢 Producción</span></td>
+          <td class="t-mono">6 mar 2026</td>
+          <td style="color:var(--text-sub);font-size:12px;">21 archivos .pbix activos</td>
+          <td><span class="complexity-pill cp-medium">Media</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Hallazgos no documentados -->
+  <div class="section-title">🔍 Encontrado en carpetas — no estaba en el reporte anterior</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:32px;">
+    <div class="callout blue" style="margin-bottom:0;">
+      <div class="callout-icon">📊</div>
+      <div class="callout-content">
+        <h4>21 dashboards Power BI (no 6)</h4>
+        <p>La carpeta <code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-size:11px;">Dash_nuevos/</code> tiene 21 .pbix: plantillavsempleados, Tickets_SQL, Nominas_sql_recovery, mantenimiento_CQ, Supervisión Inteligente Unión, rotación por estado, y más.</p>
+      </div>
+    </div>
+    <div class="callout green" style="margin-bottom:0;">
+      <div class="callout-icon">🔄</div>
+      <div class="callout-content">
+        <h4>sincronizacion_BD.py en n8n</h4>
+        <p>Script activo que replica tablas de SINGA (SQL Server) hacia PostgreSQL en Docker. Alimenta análisis y reportes en tiempo real sin consultar SINGA directamente. No estaba documentado.</p>
+      </div>
+    </div>
+    <div class="callout amber" style="margin-bottom:0;">
+      <div class="callout-icon">🧪</div>
+      <div class="callout-content">
+        <h4>Carpeta "Futuro" — no documentada</h4>
+        <p>Contiene <code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-size:11px;">Futuro_preguntas.ipynb</code> y <code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-size:11px;">futuro.pbix</code> — encuestas psicológicas en desarrollo. No estaba en el índice.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roadmap por trimestre -->
+  <div class="section-title">🗓️ Roadmap 2026 — por trimestre</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:28px;">
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(34,197,94,.3);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#4ade80;background:rgba(34,197,94,.12);padding:4px 12px;border-radius:20px;border:1px solid rgba(34,197,94,.3);">Q1 — Ene / Mar 2026</span>
+          <span style="font-size:10px;color:#4ade80;font-weight:700;">✅ Completado</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#4ade80;">✓</span>SUMCO ERP — módulos RH y CRM Ventas integrados con SINGA</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#4ade80;">✓</span>Power BI ampliado a 21 dashboards (nómina, tickets, rotación)</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#4ade80;">✓</span>n8n: sincronizacion_BD.py SINGA → PostgreSQL en producción</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#4ade80;">✓</span>Reconocimiento Facial estabilizado en terminales físicas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(59,130,246,.3);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#60a5fa;background:rgba(59,130,246,.12);padding:4px 12px;border-radius:20px;border:1px solid rgba(59,130,246,.3);">Q2 — Abr / Jun 2026</span>
+          <span style="font-size:10px;color:#60a5fa;font-weight:700;">⚡ En curso</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#60a5fa;">›</span>Contratación Inteligente — v2 con mejoras de UX en script.js</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#60a5fa;">›</span>SUMCO ERP — robots Pudu v2 + módulo de fabricación completo</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#60a5fa;">›</span>Reclut.ai — preparar para primer cliente externo</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#60a5fa;">›</span>Psicométricas — exportar "Futuro" (encuestas psicológicas)</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#60a5fa;">›</span>Ciberseguridad — rate limiting + escaneo dependencias</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(245,158,11,.3);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fbbf24;background:rgba(245,158,11,.12);padding:4px 12px;border-radius:20px;border:1px solid rgba(245,158,11,.3);">Q3 — Jul / Sep 2026</span>
+          <span style="font-size:10px;color:#fbbf24;font-weight:700;">⏳ Planeado</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#fbbf24;">›</span>YOLO v12 — reentrenamiento con más imágenes propias</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#fbbf24;">›</span>Chatbot IA — RAG multi-sistema (acceso a todos los datos)</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#fbbf24;">›</span>Supervisiones — módulo predictivo con ML de anomalías</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#fbbf24;">›</span>n8n — workflows de onboarding 100% automatizados</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#fbbf24;">›</span>Licenciar Contratación Inteligente a 2 clientes piloto</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;border-color:rgba(168,85,247,.3);">
+      <div style="padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#c084fc;background:rgba(168,85,247,.12);padding:4px 12px;border-radius:20px;border:1px solid rgba(168,85,247,.3);">Q4 — Oct / Dic 2026</span>
+          <span style="font-size:10px;color:#c084fc;font-weight:700;">⏳ Planeado</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#c084fc;">›</span>Reclut.ai — primer cliente externo pagando (SaaS real)</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#c084fc;">›</span>SUMCO ERP — módulo de rutas v2 con ML mejorado</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#c084fc;">›</span>Agente IA unificado que opera todos los sistemas</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#c084fc;">›</span>Mexiusa — Price Watch v2 con más marketplaces</li>
+          <li style="font-size:12.5px;color:var(--text-sub);padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:#c084fc;">›</span>Meta: primeros $500K MXN en ingresos externos</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-icon">🎯</div>
+    <div class="callout-content">
+      <h4>Objetivo 2026: de ecosistema interno a plataforma de ingresos</h4>
+      <ul>
+        <li><strong>Q1–Q2:</strong> Consolidar los sistemas más activos (Contratación, Reclut.ai, SUMCO ERP) y completar el índice con todos los dashboards Power BI reales (ya son 21).</li>
+        <li><strong>Q3:</strong> Escalar la capa de IA (YOLO, facial, chatbot) hacia clientes externos y automatizar onboarding con n8n.</li>
+        <li><strong>Q4:</strong> Primer ingreso externo por Reclut.ai + lanzar el agente IA que una el ecosistema completo.</li>
+        <li><strong>Meta:</strong> Primeros <strong style="color:#4ade80;">$500K MXN en ingresos externos</strong> antes de diciembre 2026.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// Architecture diagram canvas grid
+(function(){
+  const canvas = document.getElementById('archCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W,H,dots=[];
+  function resize(){
+    const wrap = document.getElementById('arch-diagram-wrap');
+    if(!wrap) return;
+    W = canvas.width = wrap.offsetWidth;
+    H = canvas.height = wrap.offsetHeight;
+    dots = [];
+    const cols = Math.floor(W/40), rows = Math.floor(H/40);
+    for(let r=0;r<=rows;r++) for(let c=0;c<=cols;c++){
+      dots.push({x:c*40,y:r*40,o:Math.random()*.5+.1,s:Math.random()*.8+.3,
+        phase:Math.random()*Math.PI*2,sp:0.008+Math.random()*.012});
+    }
+  }
+  function draw(){
+    if(!W||!H) return;
+    ctx.clearRect(0,0,W,H);
+    const t = Date.now()/1000;
+    // grid lines
+    ctx.strokeStyle='rgba(59,130,246,0.06)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    // dots
+    dots.forEach(d=>{
+      const pulse = Math.sin(t*d.sp*6+d.phase)*.5+.5;
+      ctx.fillStyle=`rgba(59,130,246,${d.o*pulse})`;
+      ctx.beginPath();ctx.arc(d.x,d.y,d.s,0,Math.PI*2);ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize();draw();
+})();
+
+// ─── Expandable Architecture Layers ───
+function alToggle(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle('al-open');
+}
+function archExpandAll(){
+  document.querySelectorAll('.al').forEach(el=>el.classList.add('al-open'));
+}
+function archCollapseAll(){
+  document.querySelectorAll('.al').forEach(el=>el.classList.remove('al-open'));
+}
+// Open first layer by default on load
+window.addEventListener('load',()=>{
+  const first = document.getElementById('al-1');
+  if(first) first.classList.add('al-open');
+});
+
+// ─── Sidebar expand / collapse ───
+const sidebar   = document.getElementById('sidebar');
+const trigger   = document.getElementById('sidebar-trigger');
+const rail      = document.getElementById('sidebar-rail');
+let sidebarLocked = false; // true = pinned open by click
+
+const sidebarTab = document.getElementById('sidebar-tab');
+
+function expandSidebar(){
+  sidebar.classList.add('expanded');
+  rail.style.opacity = '0';
+  rail.style.pointerEvents = 'none';
+  if(sidebarTab) sidebarTab.style.display = 'none';
+}
+function collapseSidebar(){
+  sidebarLocked = false;
+  sidebar.classList.remove('expanded');
+  rail.style.opacity = '1';
+  rail.style.pointerEvents = 'none';
+  if(sidebarTab) sidebarTab.style.display = '';
+}
+
+// Hover trigger (left 48px strip)
+trigger.addEventListener('mouseenter', ()=>{ if(!sidebarLocked) expandSidebar(); });
+sidebar.addEventListener('mouseleave', (e)=>{
+  if(!sidebarLocked && !sidebar.contains(e.relatedTarget)) collapseSidebar();
+});
+
+// Click on trigger = pin open
+trigger.addEventListener('click', ()=>{
+  sidebarLocked = !sidebar.classList.contains('expanded');
+  expandSidebar();
+  sidebarLocked = true;
+});
+
+// Click on rail icons = also expand + pin
+rail.addEventListener('click', ()=>{
+  sidebarLocked = true;
+  expandSidebar();
+});
+
+// Click outside = unpin & collapse
+document.addEventListener('click', (e)=>{
+  if(sidebarLocked && !sidebar.contains(e.target) && !trigger.contains(e.target) && !rail.contains(e.target)){
+    collapseSidebar();
+  }
+});
+
+// Init state
+rail.style.opacity = '1';
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('main').scrollTop = 0;
+  window.scrollTo(0, 0);
+  // Auto-collapse sidebar after selecting a page
+  setTimeout(()=>{ collapseSidebar(); }, 180);
+}
+
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+// Animate KPI numbers
+function animateNumbers() {
+  document.querySelectorAll('.kpi-val').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(8px)';
+    setTimeout(() => {
+      el.style.transition = 'opacity .4s ease, transform .4s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, Math.random() * 300 + 100);
+  });
+}
+
+window.addEventListener('load', animateNumbers);
+</script>
+</body>
+</html>
